@@ -30,7 +30,11 @@ func (v *PropertyConfig) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "max", "max_length", "min", "options")
+	fields, err := objectFields(data, "PropertyConfig")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "max", "max_length", "min", "options")
 	return nil
 }
 

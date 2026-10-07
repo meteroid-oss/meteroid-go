@@ -23,7 +23,11 @@ func (v *CreateOAuthAppRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "name", "redirect_uris", "scopes")
+	fields, err := objectFields(data, "CreateOAuthAppRequest", "name", "redirect_uris")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "name", "redirect_uris", "scopes")
 	return nil
 }
 

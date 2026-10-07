@@ -23,7 +23,11 @@ func (v *MatrixRow) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "dimension1", "dimension2", "per_unit_price")
+	fields, err := objectFields(data, "MatrixRow", "dimension1", "per_unit_price")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "dimension1", "dimension2", "per_unit_price")
 	return nil
 }
 

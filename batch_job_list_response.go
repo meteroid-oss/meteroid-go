@@ -21,7 +21,11 @@ func (v *BatchJobListResponse) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "data", "pagination_meta")
+	fields, err := objectFields(data, "BatchJobListResponse", "data", "pagination_meta")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "data", "pagination_meta")
 	return nil
 }
 

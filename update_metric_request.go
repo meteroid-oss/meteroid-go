@@ -28,7 +28,11 @@ func (v *UpdateMetricRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "description", "filters", "name", "segmentation_matrix", "unit_conversion")
+	fields, err := objectFields(data, "UpdateMetricRequest")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "description", "filters", "name", "segmentation_matrix", "unit_conversion")
 	return nil
 }
 

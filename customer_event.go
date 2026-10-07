@@ -46,7 +46,11 @@ func (v *CustomerEvent) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "alias", "billing_email", "currency", "custom_properties", "customer_id", "invoicing_emails", "name", "phone", "id", "timestamp", "type")
+	fields, err := objectFields(data, "CustomerEvent", "currency", "customer_id", "invoicing_emails", "name", "id", "timestamp", "type")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "alias", "billing_email", "currency", "custom_properties", "customer_id", "invoicing_emails", "name", "phone", "id", "timestamp", "type")
 	return nil
 }
 

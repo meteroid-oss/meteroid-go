@@ -21,7 +21,11 @@ func (v *UsageFeeStructure) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "metric_id", "model")
+	fields, err := objectFields(data, "UsageFeeStructure", "metric_id", "model")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "metric_id", "model")
 	return nil
 }
 

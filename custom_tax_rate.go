@@ -23,7 +23,11 @@ func (v *CustomTaxRate) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "name", "rate", "tax_code")
+	fields, err := objectFields(data, "CustomTaxRate", "name", "rate", "tax_code")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "name", "rate", "tax_code")
 	return nil
 }
 

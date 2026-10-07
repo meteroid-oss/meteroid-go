@@ -21,7 +21,11 @@ func (v *DoubleSegmentationMatrix) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "dimension1", "dimension2")
+	fields, err := objectFields(data, "DoubleSegmentationMatrix", "dimension1", "dimension2")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "dimension1", "dimension2")
 	return nil
 }
 

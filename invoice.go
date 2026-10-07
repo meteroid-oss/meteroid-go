@@ -106,7 +106,11 @@ func (v *Invoice) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "amount_due", "applied_credits", "billing_period_start", "child_invoice_id", "coupons", "created_at", "currency", "custom_properties", "customer_details", "customer_id", "due_date", "einvoicing_status", "finalized_at", "id", "invoice_date", "invoice_number", "invoice_type", "line_items", "marked_as_uncollectible_at", "memo", "net_terms", "paid_at", "parent_invoice_id", "payment_status", "purchase_order", "reference", "status", "subscription_id", "subtotal", "subtotal_recurring", "tax_amount", "tax_breakdown", "tax_inclusive", "total", "transactions", "updated_at", "voided_at")
+	fields, err := objectFields(data, "Invoice", "amount_due", "applied_credits", "coupons", "created_at", "currency", "customer_details", "customer_id", "id", "invoice_date", "invoice_number", "invoice_type", "line_items", "net_terms", "payment_status", "status", "subtotal", "subtotal_recurring", "tax_amount", "tax_breakdown", "tax_inclusive", "total", "transactions")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "amount_due", "applied_credits", "billing_period_start", "child_invoice_id", "coupons", "created_at", "currency", "custom_properties", "customer_details", "customer_id", "due_date", "einvoicing_status", "finalized_at", "id", "invoice_date", "invoice_number", "invoice_type", "line_items", "marked_as_uncollectible_at", "memo", "net_terms", "paid_at", "parent_invoice_id", "payment_status", "purchase_order", "reference", "status", "subscription_id", "subtotal", "subtotal_recurring", "tax_amount", "tax_breakdown", "tax_inclusive", "total", "transactions", "updated_at", "voided_at")
 	return nil
 }
 

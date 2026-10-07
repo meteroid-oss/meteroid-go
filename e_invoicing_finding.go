@@ -29,7 +29,11 @@ func (v *EInvoicingFinding) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "hint", "message", "rule", "term")
+	fields, err := objectFields(data, "EInvoicingFinding", "message", "rule", "term")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "hint", "message", "rule", "term")
 	return nil
 }
 

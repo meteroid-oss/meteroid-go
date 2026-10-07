@@ -22,7 +22,11 @@ func (v *CancelSubscriptionRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "effective_date", "reason")
+	fields, err := objectFields(data, "CancelSubscriptionRequest")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "effective_date", "reason")
 	return nil
 }
 

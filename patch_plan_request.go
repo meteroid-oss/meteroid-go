@@ -23,7 +23,11 @@ func (v *PatchPlanRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "description", "name", "self_service_rank")
+	fields, err := objectFields(data, "PatchPlanRequest")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "description", "name", "self_service_rank")
 	return nil
 }
 

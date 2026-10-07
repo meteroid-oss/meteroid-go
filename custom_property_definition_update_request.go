@@ -32,7 +32,11 @@ func (v *CustomPropertyDefinitionUpdateRequest) UnmarshalJSON(data []byte) error
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "config", "default_value", "description", "display_order", "name", "required")
+	fields, err := objectFields(data, "CustomPropertyDefinitionUpdateRequest")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "config", "default_value", "description", "display_order", "name", "required")
 	return nil
 }
 

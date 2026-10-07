@@ -106,7 +106,11 @@ func (v *SubscriptionDetails) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "activated_at", "add_ons", "applied_coupons", "auto_advance_invoices", "billing_day_anchor", "billing_start_date", "charge_automatically", "checkout_url", "components", "created_at", "currency", "current_period_end", "current_period_start", "custom_properties", "customer_alias", "customer_id", "customer_name", "end_date", "entitlements", "id", "invoice_memo", "minimum_commitment", "mrr_cents", "net_terms", "payment_methods_config", "period", "plan_id", "plan_name", "plan_version", "plan_version_id", "purchase_order", "start_date", "status", "tax_inclusive", "trial_duration")
+	fields, err := objectFields(data, "SubscriptionDetails", "add_ons", "applied_coupons", "auto_advance_invoices", "billing_day_anchor", "charge_automatically", "components", "created_at", "currency", "current_period_start", "customer_id", "customer_name", "id", "mrr_cents", "net_terms", "period", "plan_id", "plan_name", "plan_version", "plan_version_id", "start_date", "status", "tax_inclusive")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "activated_at", "add_ons", "applied_coupons", "auto_advance_invoices", "billing_day_anchor", "billing_start_date", "charge_automatically", "checkout_url", "components", "created_at", "currency", "current_period_end", "current_period_start", "custom_properties", "customer_alias", "customer_id", "customer_name", "end_date", "entitlements", "id", "invoice_memo", "minimum_commitment", "mrr_cents", "net_terms", "payment_methods_config", "period", "plan_id", "plan_name", "plan_version", "plan_version_id", "purchase_order", "start_date", "status", "tax_inclusive", "trial_duration")
 	return nil
 }
 

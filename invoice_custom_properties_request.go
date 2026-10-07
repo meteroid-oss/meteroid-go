@@ -22,7 +22,11 @@ func (v *InvoiceCustomPropertiesRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "custom_properties")
+	fields, err := objectFields(data, "InvoiceCustomPropertiesRequest")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "custom_properties")
 	return nil
 }
 

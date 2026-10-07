@@ -33,7 +33,11 @@ func (v *QuoteEvent) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "customer_id", "quote_id", "subscription_id", "id", "timestamp", "type")
+	fields, err := objectFields(data, "QuoteEvent", "customer_id", "quote_id", "id", "timestamp", "type")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "customer_id", "quote_id", "subscription_id", "id", "timestamp", "type")
 	return nil
 }
 

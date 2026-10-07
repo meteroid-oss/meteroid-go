@@ -4,6 +4,7 @@ package meteroid
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -29,8 +30,8 @@ type Products struct {
 	client *Client
 }
 
-// List products
-func (a *Products) List(ctx context.Context, options *ProductsListOptions, opts ...RequestOption) (*ProductListResponse, error) {
+// fetchList sends GET /api/v1/products and decodes the response, for [Products.List].
+func (a *Products) fetchList(ctx context.Context, options *ProductsListOptions, opts ...RequestOption) (*ProductListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/products", opts)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
@@ -56,6 +57,78 @@ func (a *Products) List(ctx context.Context, options *ProductsListOptions, opts 
 		return nil, err
 	}
 	return &out, nil
+}
+
+// ProductsListPage is a page of [Products.List]. It embeds the
+// decoded [ProductListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded ProductListResponse.
+type ProductsListPage struct {
+	ProductListResponse
+
+	// Items holds the items of this page.
+	Items []Product
+
+	next func(ctx context.Context) (*ProductsListPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *ProductsListPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *ProductsListPage) NextPage(ctx context.Context) (*ProductsListPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the ProductListResponse of the page, as received.
+func (p ProductsListPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.ProductListResponse)
+}
+
+func (p *ProductsListPage) pageItems() []Product { return p.Items }
+
+// List products
+//
+// [Products.ListAutoPaging] iterates over every item instead.
+func (a *Products) List(ctx context.Context, options *ProductsListOptions, opts ...RequestOption) (*ProductsListPage, error) {
+	var params ProductsListOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchList(ctx, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &ProductsListPage{ProductListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*ProductsListPage, error) {
+		return a.List(ctx, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListAutoPaging iterates over every item of [Products.List], fetching
+// further pages on demand.
+func (a *Products) ListAutoPaging(ctx context.Context, options *ProductsListOptions, opts ...RequestOption) *AutoPager[Product] {
+	return newAutoPager[Product](ctx, func(ctx context.Context) (*ProductsListPage, error) {
+		return a.List(ctx, options, opts...)
+	})
 }
 
 // Create a product

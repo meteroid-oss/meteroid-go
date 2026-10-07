@@ -4,6 +4,7 @@ package meteroid
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -29,8 +30,8 @@ type Customers struct {
 	client *Client
 }
 
-// List customers with optional pagination and search filtering.
-func (a *Customers) List(ctx context.Context, options *CustomersListOptions, opts ...RequestOption) (*CustomerListResponse, error) {
+// fetchList sends GET /api/v1/customers and decodes the response, for [Customers.List].
+func (a *Customers) fetchList(ctx context.Context, options *CustomersListOptions, opts ...RequestOption) (*CustomerListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/customers", opts)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
@@ -57,6 +58,78 @@ func (a *Customers) List(ctx context.Context, options *CustomersListOptions, opt
 		return nil, err
 	}
 	return &out, nil
+}
+
+// CustomersListPage is a page of [Customers.List]. It embeds the
+// decoded [CustomerListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded CustomerListResponse.
+type CustomersListPage struct {
+	CustomerListResponse
+
+	// Items holds the items of this page.
+	Items []Customer
+
+	next func(ctx context.Context) (*CustomersListPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *CustomersListPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *CustomersListPage) NextPage(ctx context.Context) (*CustomersListPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the CustomerListResponse of the page, as received.
+func (p CustomersListPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.CustomerListResponse)
+}
+
+func (p *CustomersListPage) pageItems() []Customer { return p.Items }
+
+// List customers with optional pagination and search filtering.
+//
+// [Customers.ListAutoPaging] iterates over every item instead.
+func (a *Customers) List(ctx context.Context, options *CustomersListOptions, opts ...RequestOption) (*CustomersListPage, error) {
+	var params CustomersListOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchList(ctx, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &CustomersListPage{CustomerListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*CustomersListPage, error) {
+		return a.List(ctx, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListAutoPaging iterates over every item of [Customers.List], fetching
+// further pages on demand.
+func (a *Customers) ListAutoPaging(ctx context.Context, options *CustomersListOptions, opts ...RequestOption) *AutoPager[Customer] {
+	return newAutoPager[Customer](ctx, func(ctx context.Context) (*CustomersListPage, error) {
+		return a.List(ctx, options, opts...)
+	})
 }
 
 // Create customer

@@ -19,7 +19,11 @@ func (v *BankTransferPaymentMethodConfig) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "account_id")
+	fields, err := objectFields(data, "BankTransferPaymentMethodConfig")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "account_id")
 	return nil
 }
 

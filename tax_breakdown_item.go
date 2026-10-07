@@ -33,7 +33,11 @@ func (v *TaxBreakdownItem) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "exemption_reason", "exemption_type", "name", "tax_amount", "tax_rate", "tax_reference", "taxable_amount")
+	fields, err := objectFields(data, "TaxBreakdownItem", "name", "tax_amount", "tax_rate", "taxable_amount")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "exemption_reason", "exemption_type", "name", "tax_amount", "tax_rate", "tax_reference", "taxable_amount")
 	return nil
 }
 

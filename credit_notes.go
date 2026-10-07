@@ -4,6 +4,7 @@ package meteroid
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -36,10 +37,8 @@ type CreditNotes struct {
 	client *Client
 }
 
-// List credit notes
-//
-// List a tenant's credit notes, optionally filtered by customer, invoice or status.
-func (a *CreditNotes) List(ctx context.Context, options *CreditNotesListOptions, opts ...RequestOption) (*CreditNoteListResponse, error) {
+// fetchList sends GET /api/v1/credit-notes and decodes the response, for [CreditNotes.List].
+func (a *CreditNotes) fetchList(ctx context.Context, options *CreditNotesListOptions, opts ...RequestOption) (*CreditNoteListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/credit-notes", opts)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
@@ -72,6 +71,80 @@ func (a *CreditNotes) List(ctx context.Context, options *CreditNotesListOptions,
 		return nil, err
 	}
 	return &out, nil
+}
+
+// CreditNotesListPage is a page of [CreditNotes.List]. It embeds the
+// decoded [CreditNoteListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded CreditNoteListResponse.
+type CreditNotesListPage struct {
+	CreditNoteListResponse
+
+	// Items holds the items of this page.
+	Items []CreditNote
+
+	next func(ctx context.Context) (*CreditNotesListPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *CreditNotesListPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *CreditNotesListPage) NextPage(ctx context.Context) (*CreditNotesListPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the CreditNoteListResponse of the page, as received.
+func (p CreditNotesListPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.CreditNoteListResponse)
+}
+
+func (p *CreditNotesListPage) pageItems() []CreditNote { return p.Items }
+
+// List credit notes
+//
+// List a tenant's credit notes, optionally filtered by customer, invoice or status.
+//
+// [CreditNotes.ListAutoPaging] iterates over every item instead.
+func (a *CreditNotes) List(ctx context.Context, options *CreditNotesListOptions, opts ...RequestOption) (*CreditNotesListPage, error) {
+	var params CreditNotesListOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchList(ctx, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &CreditNotesListPage{CreditNoteListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*CreditNotesListPage, error) {
+		return a.List(ctx, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListAutoPaging iterates over every item of [CreditNotes.List], fetching
+// further pages on demand.
+func (a *CreditNotes) ListAutoPaging(ctx context.Context, options *CreditNotesListOptions, opts ...RequestOption) *AutoPager[CreditNote] {
+	return newAutoPager[CreditNote](ctx, func(ctx context.Context) (*CreditNotesListPage, error) {
+		return a.List(ctx, options, opts...)
+	})
 }
 
 // Retrieve sends GET /api/v1/credit-notes/{credit_note_id}.

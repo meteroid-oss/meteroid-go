@@ -19,7 +19,11 @@ func (v *SubscriptionUpdateResponse) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "subscription")
+	fields, err := objectFields(data, "SubscriptionUpdateResponse", "subscription")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "subscription")
 	return nil
 }
 

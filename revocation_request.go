@@ -25,7 +25,11 @@ func (v *RevocationRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "token", "token_type_hint")
+	fields, err := objectFields(data, "RevocationRequest", "token")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "token", "token_type_hint")
 	return nil
 }
 

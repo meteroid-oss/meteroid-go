@@ -23,7 +23,11 @@ func (v *OAuthAppWithSecret) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "app", "client_secret")
+	fields, err := objectFields(data, "OAuthAppWithSecret", "app", "client_secret")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "app", "client_secret")
 	return nil
 }
 

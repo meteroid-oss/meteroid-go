@@ -76,7 +76,11 @@ func (v *SubscriptionEventData) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "activated_at", "auto_advance_invoices", "billing_day_anchor", "billing_start_date", "cancellation_reason", "change_type", "charge_automatically", "created_at", "currency", "custom_properties", "customer_alias", "customer_id", "customer_name", "end_date", "invoice_memo", "invoice_threshold", "mrr_cents", "net_terms", "period", "plan_name", "purchase_order", "start_date", "status", "subscription_id", "trial_duration", "version")
+	fields, err := objectFields(data, "SubscriptionEventData", "auto_advance_invoices", "billing_day_anchor", "charge_automatically", "created_at", "currency", "customer_id", "customer_name", "mrr_cents", "net_terms", "period", "plan_name", "start_date", "status", "subscription_id", "version")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "activated_at", "auto_advance_invoices", "billing_day_anchor", "billing_start_date", "cancellation_reason", "change_type", "charge_automatically", "created_at", "currency", "custom_properties", "customer_alias", "customer_id", "customer_name", "end_date", "invoice_memo", "invoice_threshold", "mrr_cents", "net_terms", "period", "plan_name", "purchase_order", "start_date", "status", "subscription_id", "trial_duration", "version")
 	return nil
 }
 

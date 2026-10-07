@@ -46,7 +46,11 @@ func (v *ReplacePlanRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "add_ons", "billing", "components", "currency", "description", "entitlements", "minimum_commitment", "name", "status", "tax_inclusive", "trial")
+	fields, err := objectFields(data, "ReplacePlanRequest", "components", "currency", "name")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "add_ons", "billing", "components", "currency", "description", "entitlements", "minimum_commitment", "name", "status", "tax_inclusive", "trial")
 	return nil
 }
 

@@ -21,7 +21,11 @@ func (v *NumberConfigValue) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "value")
+	fields, err := objectFields(data, "NumberConfigValue", "value")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "value")
 	return nil
 }
 

@@ -21,7 +21,11 @@ func (v *ComponentsScope) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "component_names")
+	fields, err := objectFields(data, "ComponentsScope", "component_names")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "component_names")
 	return nil
 }
 

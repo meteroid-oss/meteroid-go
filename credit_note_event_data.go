@@ -62,7 +62,11 @@ func (v *CreditNoteEventData) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "created_at", "credit_note_id", "credit_note_number", "credited_amount_cents", "currency", "custom_properties", "customer_id", "invoice_id", "invoice_number", "line_items", "memo", "reason", "refunded_amount_cents", "status", "subtotal", "tax_amount", "tax_breakdown", "total")
+	fields, err := objectFields(data, "CreditNoteEventData", "created_at", "credit_note_id", "credited_amount_cents", "currency", "customer_id", "invoice_id", "line_items", "refunded_amount_cents", "status", "subtotal", "tax_amount", "tax_breakdown", "total")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "created_at", "credit_note_id", "credit_note_number", "credited_amount_cents", "currency", "custom_properties", "customer_id", "invoice_id", "invoice_number", "line_items", "memo", "reason", "refunded_amount_cents", "status", "subtotal", "tax_amount", "tax_breakdown", "total")
 	return nil
 }
 

@@ -19,7 +19,11 @@ func (v *BillingCycleResetPeriod) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data)
+	fields, err := objectFields(data, "BillingCycleResetPeriod")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields)
 	return nil
 }
 

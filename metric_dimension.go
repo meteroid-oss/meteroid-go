@@ -21,7 +21,11 @@ func (v *MetricDimension) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "key", "values")
+	fields, err := objectFields(data, "MetricDimension", "key", "values")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "key", "values")
 	return nil
 }
 

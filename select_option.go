@@ -21,7 +21,11 @@ func (v *SelectOption) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "label", "value")
+	fields, err := objectFields(data, "SelectOption", "value")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "label", "value")
 	return nil
 }
 

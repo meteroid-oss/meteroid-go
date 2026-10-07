@@ -23,7 +23,11 @@ func (v *CalendarResetPeriod) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "interval", "unit")
+	fields, err := objectFields(data, "CalendarResetPeriod", "interval", "unit")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "interval", "unit")
 	return nil
 }
 

@@ -39,7 +39,11 @@ func (v *InvoiceLineItem) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "amount_total", "description", "end_date", "name", "quantity", "quoted_unit_price", "start_date", "sub_line_items", "tax_rate", "unit_price")
+	fields, err := objectFields(data, "InvoiceLineItem", "amount_total", "end_date", "name", "start_date", "sub_line_items", "tax_rate")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "amount_total", "description", "end_date", "name", "quantity", "quoted_unit_price", "start_date", "sub_line_items", "tax_rate", "unit_price")
 	return nil
 }
 

@@ -23,7 +23,11 @@ func (v *SlidingWindowResetPeriod) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "interval", "unit")
+	fields, err := objectFields(data, "SlidingWindowResetPeriod", "interval", "unit")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "interval", "unit")
 	return nil
 }
 

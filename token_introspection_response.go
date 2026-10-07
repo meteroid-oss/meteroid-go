@@ -33,7 +33,11 @@ func (v *TokenIntrospectionResponse) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "active", "client_id", "exp", "iat", "scope", "sub", "token_type")
+	fields, err := objectFields(data, "TokenIntrospectionResponse", "active")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "active", "client_id", "exp", "iat", "scope", "sub", "token_type")
 	return nil
 }
 

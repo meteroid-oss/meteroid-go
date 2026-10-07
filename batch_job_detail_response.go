@@ -56,7 +56,11 @@ func (v *BatchJobDetailResponse) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "completed_at", "created_at", "created_by", "error_csv_url", "failed_items", "failure_count", "has_error_csv", "has_output", "id", "input_file_name", "input_file_url", "job_type", "output_url", "processed_items", "status", "total_items")
+	fields, err := objectFields(data, "BatchJobDetailResponse", "created_at", "created_by", "failed_items", "failure_count", "has_error_csv", "has_output", "id", "job_type", "processed_items", "status")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "completed_at", "created_at", "created_by", "error_csv_url", "failed_items", "failure_count", "has_error_csv", "has_output", "id", "input_file_name", "input_file_url", "job_type", "output_url", "processed_items", "status", "total_items")
 	return nil
 }
 

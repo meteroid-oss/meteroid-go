@@ -76,7 +76,11 @@ func (v *CustomerCreateRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "alias", "billing_address", "billing_email", "buyer_reference", "connected_account_id", "currency", "custom_properties", "custom_taxes", "customer_type", "exemption_reason", "first_name", "invoicing_emails", "invoicing_entity_id", "invoicing_language", "is_tax_exempt", "last_name", "legal_number", "name", "phone", "preferred_locales", "shipping_address", "vat_number")
+	fields, err := objectFields(data, "CustomerCreateRequest", "currency", "custom_taxes", "invoicing_emails")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "alias", "billing_address", "billing_email", "buyer_reference", "connected_account_id", "currency", "custom_properties", "custom_taxes", "customer_type", "exemption_reason", "first_name", "invoicing_emails", "invoicing_entity_id", "invoicing_language", "is_tax_exempt", "last_name", "legal_number", "name", "phone", "preferred_locales", "shipping_address", "vat_number")
 	return nil
 }
 

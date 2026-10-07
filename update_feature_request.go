@@ -24,7 +24,11 @@ func (v *UpdateFeatureRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "description", "name")
+	fields, err := objectFields(data, "UpdateFeatureRequest")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "description", "name")
 	return nil
 }
 

@@ -4,6 +4,7 @@ package meteroid
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -32,8 +33,8 @@ type AddOns struct {
 	client *Client
 }
 
-// List add-ons
-func (a *AddOns) List(ctx context.Context, options *AddOnsListOptions, opts ...RequestOption) (*AddOnListResponse, error) {
+// fetchList sends GET /api/v1/addons and decodes the response, for [AddOns.List].
+func (a *AddOns) fetchList(ctx context.Context, options *AddOnsListOptions, opts ...RequestOption) (*AddOnListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/addons", opts)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
@@ -62,6 +63,78 @@ func (a *AddOns) List(ctx context.Context, options *AddOnsListOptions, opts ...R
 		return nil, err
 	}
 	return &out, nil
+}
+
+// AddOnsListPage is a page of [AddOns.List]. It embeds the
+// decoded [AddOnListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded AddOnListResponse.
+type AddOnsListPage struct {
+	AddOnListResponse
+
+	// Items holds the items of this page.
+	Items []AddOn
+
+	next func(ctx context.Context) (*AddOnsListPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *AddOnsListPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *AddOnsListPage) NextPage(ctx context.Context) (*AddOnsListPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the AddOnListResponse of the page, as received.
+func (p AddOnsListPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.AddOnListResponse)
+}
+
+func (p *AddOnsListPage) pageItems() []AddOn { return p.Items }
+
+// List add-ons
+//
+// [AddOns.ListAutoPaging] iterates over every item instead.
+func (a *AddOns) List(ctx context.Context, options *AddOnsListOptions, opts ...RequestOption) (*AddOnsListPage, error) {
+	var params AddOnsListOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchList(ctx, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &AddOnsListPage{AddOnListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*AddOnsListPage, error) {
+		return a.List(ctx, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListAutoPaging iterates over every item of [AddOns.List], fetching
+// further pages on demand.
+func (a *AddOns) ListAutoPaging(ctx context.Context, options *AddOnsListOptions, opts ...RequestOption) *AutoPager[AddOn] {
+	return newAutoPager[AddOn](ctx, func(ctx context.Context) (*AddOnsListPage, error) {
+		return a.List(ctx, options, opts...)
+	})
 }
 
 // Create an add-on

@@ -23,7 +23,11 @@ func (v *RecurringFee) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "billing_type", "quantity", "rate")
+	fields, err := objectFields(data, "RecurringFee", "billing_type", "quantity", "rate")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "billing_type", "quantity", "rate")
 	return nil
 }
 
