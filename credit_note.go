@@ -73,7 +73,11 @@ func (v *CreditNote) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "created_at", "credit_note_number", "credit_type", "credited_amount_cents", "currency", "custom_properties", "customer_id", "finalized_at", "id", "invoice_id", "invoice_number", "line_items", "memo", "plan_version_id", "reason", "refunded_amount_cents", "status", "subscription_id", "subtotal", "tax_amount", "tax_breakdown", "total", "updated_at", "voided_at")
+	fields, err := objectFields(data, "CreditNote", "created_at", "credit_note_number", "credit_type", "credited_amount_cents", "currency", "customer_id", "id", "invoice_id", "invoice_number", "line_items", "refunded_amount_cents", "status", "subtotal", "tax_amount", "tax_breakdown", "total")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "created_at", "credit_note_number", "credit_type", "credited_amount_cents", "currency", "custom_properties", "customer_id", "finalized_at", "id", "invoice_id", "invoice_number", "line_items", "memo", "plan_version_id", "reason", "refunded_amount_cents", "status", "subscription_id", "subtotal", "tax_amount", "tax_breakdown", "total", "updated_at", "voided_at")
 	return nil
 }
 

@@ -19,7 +19,11 @@ func (v *CreateCheckoutSessionResponse) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "session")
+	fields, err := objectFields(data, "CreateCheckoutSessionResponse", "session")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "session")
 	return nil
 }
 

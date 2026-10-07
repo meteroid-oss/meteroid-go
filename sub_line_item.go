@@ -27,7 +27,11 @@ func (v *SubLineItem) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "id", "name", "quantity", "total", "unit_price")
+	fields, err := objectFields(data, "SubLineItem", "id", "name", "quantity", "total", "unit_price")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "id", "name", "quantity", "total", "unit_price")
 	return nil
 }
 

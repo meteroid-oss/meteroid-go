@@ -21,7 +21,11 @@ func (v *UnitConversion) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "factor", "rounding")
+	fields, err := objectFields(data, "UnitConversion", "factor", "rounding")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "factor", "rounding")
 	return nil
 }
 

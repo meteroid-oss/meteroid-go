@@ -22,7 +22,11 @@ func (v *MinimumCommitmentInput) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "amount", "scope")
+	fields, err := objectFields(data, "MinimumCommitmentInput", "amount", "scope")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "amount", "scope")
 	return nil
 }
 

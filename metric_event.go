@@ -54,7 +54,11 @@ func (v *MetricEvent) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "aggregation_key", "aggregation_type", "code", "created_at", "description", "metric_id", "name", "product_family_id", "product_id", "segmentation_matrix", "unit_conversion_factor", "unit_conversion_rounding", "usage_group_key", "id", "timestamp", "type")
+	fields, err := objectFields(data, "MetricEvent", "aggregation_type", "code", "created_at", "metric_id", "name", "product_family_id", "id", "timestamp", "type")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "aggregation_key", "aggregation_type", "code", "created_at", "description", "metric_id", "name", "product_family_id", "product_id", "segmentation_matrix", "unit_conversion_factor", "unit_conversion_rounding", "usage_group_key", "id", "timestamp", "type")
 	return nil
 }
 

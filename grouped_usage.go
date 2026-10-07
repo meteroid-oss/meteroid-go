@@ -21,7 +21,11 @@ func (v *GroupedUsage) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "dimensions", "value")
+	fields, err := objectFields(data, "GroupedUsage", "dimensions", "value")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "dimensions", "value")
 	return nil
 }
 

@@ -27,7 +27,11 @@ func (v *OnboardingLinkResponse) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "expires_at", "url")
+	fields, err := objectFields(data, "OnboardingLinkResponse", "expires_at", "url")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "expires_at", "url")
 	return nil
 }
 

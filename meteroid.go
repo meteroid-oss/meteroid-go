@@ -16,11 +16,12 @@ const (
 	// Options.ServerURL nor the METEROID_BASE_URL environment variable is
 	// set. Empty when the API declares no server: calls then fail with a
 	// [*RequestError] until one of them is set.
-	DefaultServerURL = ""
+	DefaultServerURL = "https://api.meteroid.com"
 
 	// DefaultMaxRetries is how many times a request is retried when it fails
 	// transiently: connection errors, timeouts, 408, 429 and 5xx responses, as
-	// long as the request is idempotent or carries an Idempotency-Key.
+	// long as the request is idempotent or carries an Idempotency-Key, which POSTs get when
+	// the API deduplicates by it.
 	DefaultMaxRetries = 2
 
 	// APIKeyEnv names the environment variable [New] reads the API token from

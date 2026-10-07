@@ -57,7 +57,11 @@ func (v *ConnectedAccount) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "connected_organization_id", "connected_tenant_id", "connection_type", "created_at", "id", "metadata", "onboarding_completed_at", "onboarding_mode", "pending_country", "pending_email", "pending_organization_name", "platform_customer_id", "platform_organization_id", "revoked_at", "status")
+	fields, err := objectFields(data, "ConnectedAccount", "connection_type", "created_at", "id", "onboarding_mode", "platform_organization_id", "status")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "connected_organization_id", "connected_tenant_id", "connection_type", "created_at", "id", "metadata", "onboarding_completed_at", "onboarding_mode", "pending_country", "pending_email", "pending_organization_name", "platform_customer_id", "platform_organization_id", "revoked_at", "status")
 	return nil
 }
 

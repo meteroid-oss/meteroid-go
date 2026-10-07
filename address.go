@@ -29,7 +29,11 @@ func (v *Address) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "city", "country", "line1", "line2", "state", "zip_code")
+	fields, err := objectFields(data, "Address")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "city", "country", "line1", "line2", "state", "zip_code")
 	return nil
 }
 

@@ -25,7 +25,11 @@ func (v *ConfigFeatureType) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "options", "value_type")
+	fields, err := objectFields(data, "ConfigFeatureType", "value_type")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "options", "value_type")
 	return nil
 }
 

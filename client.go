@@ -32,9 +32,9 @@ type Client struct {
 // New builds a Client authenticated with the given API token, or with the
 // METEROID_API_KEY environment variable when token is empty.
 //
-// Pass nil options to use the defaults: METEROID_BASE_URL as the server, a 60 second timeout per attempt and
-// two retries on transient failures. The API declares no server: without
-// Options.ServerURL or METEROID_BASE_URL, every call fails with a [*RequestError].
+// Pass nil options to use the defaults: METEROID_BASE_URL or
+// https://api.meteroid.com as the server, a 60 second timeout per attempt and
+// two retries on transient failures.
 func New(token string, options *Options) *Client {
 	return &Client{cfg: newConfig(token, options)}
 }

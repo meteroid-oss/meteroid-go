@@ -26,7 +26,11 @@ func (v *AvailableParameters) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "billing_periods", "capacity_thresholds", "slot_components")
+	fields, err := objectFields(data, "AvailableParameters")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "billing_periods", "capacity_thresholds", "slot_components")
 	return nil
 }
 

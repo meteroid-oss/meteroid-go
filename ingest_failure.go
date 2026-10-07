@@ -21,7 +21,11 @@ func (v *IngestFailure) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "event_id", "reason")
+	fields, err := objectFields(data, "IngestFailure", "event_id", "reason")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "event_id", "reason")
 	return nil
 }
 

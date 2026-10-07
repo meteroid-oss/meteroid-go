@@ -23,7 +23,11 @@ func (v *LinkedSegmentationMatrix) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "dimension1_key", "dimension2_key", "values")
+	fields, err := objectFields(data, "LinkedSegmentationMatrix", "dimension1_key", "dimension2_key", "values")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "dimension1_key", "dimension2_key", "values")
 	return nil
 }
 

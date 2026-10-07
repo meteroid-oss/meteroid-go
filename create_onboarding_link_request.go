@@ -19,7 +19,11 @@ func (v *CreateOnboardingLinkRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "redirect_url")
+	fields, err := objectFields(data, "CreateOnboardingLinkRequest", "redirect_url")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "redirect_url")
 	return nil
 }
 

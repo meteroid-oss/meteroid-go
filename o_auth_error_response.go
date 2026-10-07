@@ -25,7 +25,11 @@ func (v *OAuthErrorResponse) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "error", "error_description", "error_uri")
+	fields, err := objectFields(data, "OAuthErrorResponse", "error")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "error", "error_description", "error_uri")
 	return nil
 }
 

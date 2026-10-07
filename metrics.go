@@ -4,6 +4,7 @@ package meteroid
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -30,8 +31,8 @@ type Metrics struct {
 	client *Client
 }
 
-// List billable metrics
-func (a *Metrics) List(ctx context.Context, options *MetricsListOptions, opts ...RequestOption) (*MetricListResponse, error) {
+// fetchList sends GET /api/v1/metrics and decodes the response, for [Metrics.List].
+func (a *Metrics) fetchList(ctx context.Context, options *MetricsListOptions, opts ...RequestOption) (*MetricListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/metrics", opts)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
@@ -57,6 +58,78 @@ func (a *Metrics) List(ctx context.Context, options *MetricsListOptions, opts ..
 		return nil, err
 	}
 	return &out, nil
+}
+
+// MetricsListPage is a page of [Metrics.List]. It embeds the
+// decoded [MetricListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded MetricListResponse.
+type MetricsListPage struct {
+	MetricListResponse
+
+	// Items holds the items of this page.
+	Items []MetricSummary
+
+	next func(ctx context.Context) (*MetricsListPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *MetricsListPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *MetricsListPage) NextPage(ctx context.Context) (*MetricsListPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the MetricListResponse of the page, as received.
+func (p MetricsListPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.MetricListResponse)
+}
+
+func (p *MetricsListPage) pageItems() []MetricSummary { return p.Items }
+
+// List billable metrics
+//
+// [Metrics.ListAutoPaging] iterates over every item instead.
+func (a *Metrics) List(ctx context.Context, options *MetricsListOptions, opts ...RequestOption) (*MetricsListPage, error) {
+	var params MetricsListOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchList(ctx, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &MetricsListPage{MetricListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*MetricsListPage, error) {
+		return a.List(ctx, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListAutoPaging iterates over every item of [Metrics.List], fetching
+// further pages on demand.
+func (a *Metrics) ListAutoPaging(ctx context.Context, options *MetricsListOptions, opts ...RequestOption) *AutoPager[MetricSummary] {
+	return newAutoPager[MetricSummary](ctx, func(ctx context.Context) (*MetricsListPage, error) {
+		return a.List(ctx, options, opts...)
+	})
 }
 
 // Create a billable metric

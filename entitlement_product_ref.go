@@ -23,7 +23,11 @@ func (v *EntitlementProductRef) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "id", "name")
+	fields, err := objectFields(data, "EntitlementProductRef", "id", "name")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "id", "name")
 	return nil
 }
 

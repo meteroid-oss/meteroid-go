@@ -65,7 +65,11 @@ func (v *Plan) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "available_parameters", "billing_cycles", "created_at", "currency", "description", "entitlements", "id", "minimum_commitment", "name", "net_terms", "period_start_day", "plan_type", "price_components", "product_family", "self_service_rank", "status", "tax_inclusive", "trial", "version", "version_id")
+	fields, err := objectFields(data, "Plan", "available_parameters", "created_at", "currency", "id", "name", "net_terms", "plan_type", "price_components", "product_family", "status", "tax_inclusive", "version", "version_id")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "available_parameters", "billing_cycles", "created_at", "currency", "description", "entitlements", "id", "minimum_commitment", "name", "net_terms", "period_start_day", "plan_type", "price_components", "product_family", "self_service_rank", "status", "tax_inclusive", "trial", "version", "version_id")
 	return nil
 }
 

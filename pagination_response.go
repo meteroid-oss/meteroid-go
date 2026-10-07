@@ -25,7 +25,11 @@ func (v *PaginationResponse) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "page", "per_page", "total_items", "total_pages")
+	fields, err := objectFields(data, "PaginationResponse", "page", "per_page", "total_items", "total_pages")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "page", "per_page", "total_items", "total_pages")
 	return nil
 }
 

@@ -25,7 +25,11 @@ func (v *PlanAddOnInput) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "add_on_id", "max_instances", "price_id", "self_serviceable")
+	fields, err := objectFields(data, "PlanAddOnInput", "add_on_id")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "add_on_id", "max_instances", "price_id", "self_serviceable")
 	return nil
 }
 

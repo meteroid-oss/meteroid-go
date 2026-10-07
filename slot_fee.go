@@ -27,7 +27,11 @@ func (v *SlotFee) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "initial_slots", "max_slots", "min_slots", "unit", "unit_rate")
+	fields, err := objectFields(data, "SlotFee", "initial_slots", "unit", "unit_rate")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "initial_slots", "max_slots", "min_slots", "unit", "unit_rate")
 	return nil
 }
 

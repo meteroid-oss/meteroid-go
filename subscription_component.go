@@ -27,7 +27,11 @@ func (v *SubscriptionComponent) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "fee", "name", "period", "price_component_id", "product_id")
+	fields, err := objectFields(data, "SubscriptionComponent", "fee", "name", "period")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "fee", "name", "period", "price_component_id", "product_id")
 	return nil
 }
 

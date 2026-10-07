@@ -25,7 +25,11 @@ func (v *PaymentMethodInfo) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "account_number_hint", "card_brand", "card_last4", "payment_method_type")
+	fields, err := objectFields(data, "PaymentMethodInfo", "payment_method_type")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "account_number_hint", "card_brand", "card_last4", "payment_method_type")
 	return nil
 }
 

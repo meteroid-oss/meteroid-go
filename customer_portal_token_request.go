@@ -25,7 +25,11 @@ func (v *CustomerPortalTokenRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "expires_in_seconds", "scopes")
+	fields, err := objectFields(data, "CustomerPortalTokenRequest")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "expires_in_seconds", "scopes")
 	return nil
 }
 

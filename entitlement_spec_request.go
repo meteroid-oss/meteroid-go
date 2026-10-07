@@ -23,7 +23,11 @@ func (v *EntitlementSpecRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "feature_id", "value")
+	fields, err := objectFields(data, "EntitlementSpecRequest", "feature_id", "value")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "feature_id", "value")
 	return nil
 }
 

@@ -19,7 +19,11 @@ func (v *PercentageDiscount) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "percentage")
+	fields, err := objectFields(data, "PercentageDiscount", "percentage")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "percentage")
 	return nil
 }
 

@@ -19,7 +19,11 @@ func (v *MeteredFeatureType) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "metric_id")
+	fields, err := objectFields(data, "MeteredFeatureType", "metric_id")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "metric_id")
 	return nil
 }
 

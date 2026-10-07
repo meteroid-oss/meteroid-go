@@ -4,6 +4,7 @@ package meteroid
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -36,8 +37,8 @@ type BatchJobs struct {
 	client *Client
 }
 
-// List batch jobs with optional filtering by type and status.
-func (a *BatchJobs) List(ctx context.Context, options *BatchJobsListOptions, opts ...RequestOption) (*BatchJobListResponse, error) {
+// fetchList sends GET /api/v1/batch-jobs and decodes the response, for [BatchJobs.List].
+func (a *BatchJobs) fetchList(ctx context.Context, options *BatchJobsListOptions, opts ...RequestOption) (*BatchJobListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/batch-jobs", opts)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
@@ -65,6 +66,78 @@ func (a *BatchJobs) List(ctx context.Context, options *BatchJobsListOptions, opt
 	return &out, nil
 }
 
+// BatchJobsListPage is a page of [BatchJobs.List]. It embeds the
+// decoded [BatchJobListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded BatchJobListResponse.
+type BatchJobsListPage struct {
+	BatchJobListResponse
+
+	// Items holds the items of this page.
+	Items []BatchJobResponse
+
+	next func(ctx context.Context) (*BatchJobsListPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *BatchJobsListPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *BatchJobsListPage) NextPage(ctx context.Context) (*BatchJobsListPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the BatchJobListResponse of the page, as received.
+func (p BatchJobsListPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.BatchJobListResponse)
+}
+
+func (p *BatchJobsListPage) pageItems() []BatchJobResponse { return p.Items }
+
+// List batch jobs with optional filtering by type and status.
+//
+// [BatchJobs.ListAutoPaging] iterates over every item instead.
+func (a *BatchJobs) List(ctx context.Context, options *BatchJobsListOptions, opts ...RequestOption) (*BatchJobsListPage, error) {
+	var params BatchJobsListOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchList(ctx, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &BatchJobsListPage{BatchJobListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*BatchJobsListPage, error) {
+		return a.List(ctx, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListAutoPaging iterates over every item of [BatchJobs.List], fetching
+// further pages on demand.
+func (a *BatchJobs) ListAutoPaging(ctx context.Context, options *BatchJobsListOptions, opts ...RequestOption) *AutoPager[BatchJobResponse] {
+	return newAutoPager[BatchJobResponse](ctx, func(ctx context.Context) (*BatchJobsListPage, error) {
+		return a.List(ctx, options, opts...)
+	})
+}
+
 // Retrieve sends GET /api/v1/batch-jobs/{batch_job_id}.
 //
 // # Get batch job detail
@@ -86,12 +159,8 @@ func (a *BatchJobs) Retrieve(ctx context.Context, batchJobID string, opts ...Req
 	return &out, nil
 }
 
-// ListFailures sends GET /api/v1/batch-jobs/{batch_job_id}/failures.
-//
-// # List batch job failures
-//
-// Retrieve paginated failures for a batch job.
-func (a *BatchJobs) ListFailures(ctx context.Context, batchJobID string, options *BatchJobsListFailuresOptions, opts ...RequestOption) (*BatchJobFailuresResponse, error) {
+// fetchListFailures sends GET /api/v1/batch-jobs/{batch_job_id}/failures and decodes the response, for [BatchJobs.ListFailures].
+func (a *BatchJobs) fetchListFailures(ctx context.Context, batchJobID string, options *BatchJobsListFailuresOptions, opts ...RequestOption) (*BatchJobFailuresResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/batch-jobs/{batch_job_id}/failures", opts)
 	req.SetPathParam("batch_job_id", batchJobID)
 	req.errors = errorSchemas{
@@ -114,4 +183,80 @@ func (a *BatchJobs) ListFailures(ctx context.Context, batchJobID string, options
 		return nil, err
 	}
 	return &out, nil
+}
+
+// BatchJobsListFailuresPage is a page of [BatchJobs.ListFailures]. It embeds the
+// decoded [BatchJobFailuresResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded BatchJobFailuresResponse.
+type BatchJobsListFailuresPage struct {
+	BatchJobFailuresResponse
+
+	// Items holds the items of this page.
+	Items []BatchJobItemFailureResponse
+
+	next func(ctx context.Context) (*BatchJobsListFailuresPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *BatchJobsListFailuresPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *BatchJobsListFailuresPage) NextPage(ctx context.Context) (*BatchJobsListFailuresPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the BatchJobFailuresResponse of the page, as received.
+func (p BatchJobsListFailuresPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.BatchJobFailuresResponse)
+}
+
+func (p *BatchJobsListFailuresPage) pageItems() []BatchJobItemFailureResponse { return p.Items }
+
+// ListFailures sends GET /api/v1/batch-jobs/{batch_job_id}/failures and returns the first page of results.
+//
+// # List batch job failures
+//
+// Retrieve paginated failures for a batch job.
+//
+// [BatchJobs.ListFailuresAutoPaging] iterates over every item instead.
+func (a *BatchJobs) ListFailures(ctx context.Context, batchJobID string, options *BatchJobsListFailuresOptions, opts ...RequestOption) (*BatchJobsListFailuresPage, error) {
+	var params BatchJobsListFailuresOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchListFailures(ctx, batchJobID, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &BatchJobsListFailuresPage{BatchJobFailuresResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	var next int32
+	if params.Offset != nil {
+		next = *params.Offset
+	}
+	next += int32(len(page.Items))
+	if reached(next, resp.TotalCount) {
+		return page, nil
+	}
+	params.Offset = &next
+	page.next = func(ctx context.Context) (*BatchJobsListFailuresPage, error) {
+		return a.ListFailures(ctx, batchJobID, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListFailuresAutoPaging iterates over every item of [BatchJobs.ListFailures], fetching
+// further pages on demand.
+func (a *BatchJobs) ListFailuresAutoPaging(ctx context.Context, batchJobID string, options *BatchJobsListFailuresOptions, opts ...RequestOption) *AutoPager[BatchJobItemFailureResponse] {
+	return newAutoPager[BatchJobItemFailureResponse](ctx, func(ctx context.Context) (*BatchJobsListFailuresPage, error) {
+		return a.ListFailures(ctx, batchJobID, options, opts...)
+	})
 }

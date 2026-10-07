@@ -4,6 +4,7 @@ package meteroid
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -93,8 +94,8 @@ func (a *Plans) CreatePlanVersionEntitlement(ctx context.Context, planVersionID 
 	return &out, nil
 }
 
-// List plans
-func (a *Plans) List(ctx context.Context, options *PlansListOptions, opts ...RequestOption) (*PlanListResponse, error) {
+// fetchList sends GET /api/v1/plans and decodes the response, for [Plans.List].
+func (a *Plans) fetchList(ctx context.Context, options *PlansListOptions, opts ...RequestOption) (*PlanListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/plans", opts)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
@@ -130,6 +131,78 @@ func (a *Plans) List(ctx context.Context, options *PlansListOptions, opts ...Req
 		return nil, err
 	}
 	return &out, nil
+}
+
+// PlansListPage is a page of [Plans.List]. It embeds the
+// decoded [PlanListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded PlanListResponse.
+type PlansListPage struct {
+	PlanListResponse
+
+	// Items holds the items of this page.
+	Items []Plan
+
+	next func(ctx context.Context) (*PlansListPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *PlansListPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *PlansListPage) NextPage(ctx context.Context) (*PlansListPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the PlanListResponse of the page, as received.
+func (p PlansListPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.PlanListResponse)
+}
+
+func (p *PlansListPage) pageItems() []Plan { return p.Items }
+
+// List plans
+//
+// [Plans.ListAutoPaging] iterates over every item instead.
+func (a *Plans) List(ctx context.Context, options *PlansListOptions, opts ...RequestOption) (*PlansListPage, error) {
+	var params PlansListOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchList(ctx, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &PlansListPage{PlanListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*PlansListPage, error) {
+		return a.List(ctx, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListAutoPaging iterates over every item of [Plans.List], fetching
+// further pages on demand.
+func (a *Plans) ListAutoPaging(ctx context.Context, options *PlansListOptions, opts ...RequestOption) *AutoPager[Plan] {
+	return newAutoPager[Plan](ctx, func(ctx context.Context) (*PlansListPage, error) {
+		return a.List(ctx, options, opts...)
+	})
 }
 
 // Create a plan
@@ -296,10 +369,8 @@ func (a *Plans) Unarchive(ctx context.Context, planID string, opts ...RequestOpt
 	return a.client.execute(ctx, req, nil)
 }
 
-// ListVersions sends GET /api/v1/plans/{plan_id}/versions.
-//
-// List plan versions
-func (a *Plans) ListVersions(ctx context.Context, planID string, options *PlansListVersionsOptions, opts ...RequestOption) (*PlanVersionListResponse, error) {
+// fetchListVersions sends GET /api/v1/plans/{plan_id}/versions and decodes the response, for [Plans.ListVersions].
+func (a *Plans) fetchListVersions(ctx context.Context, planID string, options *PlansListVersionsOptions, opts ...RequestOption) (*PlanVersionListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/plans/{plan_id}/versions", opts)
 	req.SetPathParam("plan_id", planID)
 	req.errors = errorSchemas{
@@ -318,4 +389,78 @@ func (a *Plans) ListVersions(ctx context.Context, planID string, options *PlansL
 		return nil, err
 	}
 	return &out, nil
+}
+
+// PlansListVersionsPage is a page of [Plans.ListVersions]. It embeds the
+// decoded [PlanVersionListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded PlanVersionListResponse.
+type PlansListVersionsPage struct {
+	PlanVersionListResponse
+
+	// Items holds the items of this page.
+	Items []PlanVersionSummary
+
+	next func(ctx context.Context) (*PlansListVersionsPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *PlansListVersionsPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *PlansListVersionsPage) NextPage(ctx context.Context) (*PlansListVersionsPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the PlanVersionListResponse of the page, as received.
+func (p PlansListVersionsPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.PlanVersionListResponse)
+}
+
+func (p *PlansListVersionsPage) pageItems() []PlanVersionSummary { return p.Items }
+
+// ListVersions sends GET /api/v1/plans/{plan_id}/versions and returns the first page of results.
+//
+// # List plan versions
+//
+// [Plans.ListVersionsAutoPaging] iterates over every item instead.
+func (a *Plans) ListVersions(ctx context.Context, planID string, options *PlansListVersionsOptions, opts ...RequestOption) (*PlansListVersionsPage, error) {
+	var params PlansListVersionsOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchListVersions(ctx, planID, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &PlansListVersionsPage{PlanVersionListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*PlansListVersionsPage, error) {
+		return a.ListVersions(ctx, planID, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListVersionsAutoPaging iterates over every item of [Plans.ListVersions], fetching
+// further pages on demand.
+func (a *Plans) ListVersionsAutoPaging(ctx context.Context, planID string, options *PlansListVersionsOptions, opts ...RequestOption) *AutoPager[PlanVersionSummary] {
+	return newAutoPager[PlanVersionSummary](ctx, func(ctx context.Context) (*PlansListVersionsPage, error) {
+		return a.ListVersions(ctx, planID, options, opts...)
+	})
 }

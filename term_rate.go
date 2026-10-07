@@ -21,7 +21,11 @@ func (v *TermRate) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "price", "term")
+	fields, err := objectFields(data, "TermRate", "price", "term")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "price", "term")
 	return nil
 }
 

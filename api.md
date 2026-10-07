@@ -14,7 +14,8 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.AddOns().List(ctx, options *AddOnsListOptions) (*AddOnListResponse, error)` | `GET /api/v1/addons` | [`AddOnListResponse`](add_on_list_response.go) |
+| `client.AddOns().List(ctx, options *AddOnsListOptions) (*AddOnsListPage, error)` | `GET /api/v1/addons` | [`AddOnListResponse`](add_on_list_response.go) page of [`AddOn`](add_on.go) |
+| `client.AddOns().ListAutoPaging(ctx, options *AddOnsListOptions) *AutoPager[AddOn]` | `GET /api/v1/addons` | every [`AddOn`](add_on.go) |
 | `client.AddOns().Create(ctx, createAddOnRequest CreateAddOnRequest) (*AddOn, error)` | `POST /api/v1/addons` | [`AddOn`](add_on.go) |
 | `client.AddOns().Retrieve(ctx, addonID string) (*AddOn, error)` | `GET /api/v1/addons/{addon_id}` | [`AddOn`](add_on.go) |
 | `client.AddOns().Update(ctx, addonID string, updateAddOnRequest UpdateAddOnRequest) (*AddOn, error)` | `PATCH /api/v1/addons/{addon_id}` | [`AddOn`](add_on.go) |
@@ -29,9 +30,11 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.BatchJobs().List(ctx, options *BatchJobsListOptions) (*BatchJobListResponse, error)` | `GET /api/v1/batch-jobs` | [`BatchJobListResponse`](batch_job_list_response.go) |
+| `client.BatchJobs().List(ctx, options *BatchJobsListOptions) (*BatchJobsListPage, error)` | `GET /api/v1/batch-jobs` | [`BatchJobListResponse`](batch_job_list_response.go) page of [`BatchJobResponse`](batch_job_response.go) |
+| `client.BatchJobs().ListAutoPaging(ctx, options *BatchJobsListOptions) *AutoPager[BatchJobResponse]` | `GET /api/v1/batch-jobs` | every [`BatchJobResponse`](batch_job_response.go) |
 | `client.BatchJobs().Retrieve(ctx, batchJobID string) (*BatchJobDetailResponse, error)` | `GET /api/v1/batch-jobs/{batch_job_id}` | [`BatchJobDetailResponse`](batch_job_detail_response.go) |
-| `client.BatchJobs().ListFailures(ctx, batchJobID string, options *BatchJobsListFailuresOptions) (*BatchJobFailuresResponse, error)` | `GET /api/v1/batch-jobs/{batch_job_id}/failures` | [`BatchJobFailuresResponse`](batch_job_failures_response.go) |
+| `client.BatchJobs().ListFailures(ctx, batchJobID string, options *BatchJobsListFailuresOptions) (*BatchJobsListFailuresPage, error)` | `GET /api/v1/batch-jobs/{batch_job_id}/failures` | [`BatchJobFailuresResponse`](batch_job_failures_response.go) page of [`BatchJobItemFailureResponse`](batch_job_item_failure_response.go) |
+| `client.BatchJobs().ListFailuresAutoPaging(ctx, batchJobID string, options *BatchJobsListFailuresOptions) *AutoPager[BatchJobItemFailureResponse]` | `GET /api/v1/batch-jobs/{batch_job_id}/failures` | every [`BatchJobItemFailureResponse`](batch_job_item_failure_response.go) |
 
 ## Checkout sessions
 
@@ -62,7 +65,8 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.Coupons().List(ctx, options *CouponsListOptions) (*CouponListResponse, error)` | `GET /api/v1/coupons` | [`CouponListResponse`](coupon_list_response.go) |
+| `client.Coupons().List(ctx, options *CouponsListOptions) (*CouponsListPage, error)` | `GET /api/v1/coupons` | [`CouponListResponse`](coupon_list_response.go) page of [`Coupon`](coupon.go) |
+| `client.Coupons().ListAutoPaging(ctx, options *CouponsListOptions) *AutoPager[Coupon]` | `GET /api/v1/coupons` | every [`Coupon`](coupon.go) |
 | `client.Coupons().Create(ctx, createCouponRequest CreateCouponRequest) (*Coupon, error)` | `POST /api/v1/coupons` | [`Coupon`](coupon.go) |
 | `client.Coupons().Retrieve(ctx, couponID string) (*Coupon, error)` | `GET /api/v1/coupons/{coupon_id}` | [`Coupon`](coupon.go) |
 | `client.Coupons().Update(ctx, couponID string, updateCouponRequest UpdateCouponRequest) (*Coupon, error)` | `PATCH /api/v1/coupons/{coupon_id}` | [`Coupon`](coupon.go) |
@@ -77,7 +81,8 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.CreditNotes().List(ctx, options *CreditNotesListOptions) (*CreditNoteListResponse, error)` | `GET /api/v1/credit-notes` | [`CreditNoteListResponse`](credit_note_list_response.go) |
+| `client.CreditNotes().List(ctx, options *CreditNotesListOptions) (*CreditNotesListPage, error)` | `GET /api/v1/credit-notes` | [`CreditNoteListResponse`](credit_note_list_response.go) page of [`CreditNote`](credit_note.go) |
+| `client.CreditNotes().ListAutoPaging(ctx, options *CreditNotesListOptions) *AutoPager[CreditNote]` | `GET /api/v1/credit-notes` | every [`CreditNote`](credit_note.go) |
 | `client.CreditNotes().Retrieve(ctx, creditNoteID string) (*CreditNote, error)` | `GET /api/v1/credit-notes/{credit_note_id}` | [`CreditNote`](credit_note.go) |
 | `client.CreditNotes().UpdateCustomProperties(ctx, creditNoteID string, creditNoteCustomPropertiesRequest CreditNoteCustomPropertiesRequest) (*CreditNote, error)` | `PATCH /api/v1/credit-notes/{credit_note_id}/custom-properties` | [`CreditNote`](credit_note.go) |
 | `client.CreditNotes().Download(ctx, creditNoteID string) ([]byte, error)` | `GET /api/v1/credit-notes/{credit_note_id}/download` | bytes |
@@ -89,7 +94,8 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.CustomProperties().ListCustomPropertyDefinitions(ctx, options *CustomPropertiesListCustomPropertyDefinitionsOptions) (*CustomPropertyDefinitionListResponse, error)` | `GET /api/v1/custom-property-definitions` | [`CustomPropertyDefinitionListResponse`](custom_property_definition_list_response.go) |
+| `client.CustomProperties().ListCustomPropertyDefinitions(ctx, options *CustomPropertiesListCustomPropertyDefinitionsOptions) (*CustomPropertiesListCustomPropertyDefinitionsPage, error)` | `GET /api/v1/custom-property-definitions` | [`CustomPropertyDefinitionListResponse`](custom_property_definition_list_response.go) page of [`CustomPropertyDefinition`](custom_property_definition.go) |
+| `client.CustomProperties().ListCustomPropertyDefinitionsAutoPaging(ctx, options *CustomPropertiesListCustomPropertyDefinitionsOptions) *AutoPager[CustomPropertyDefinition]` | `GET /api/v1/custom-property-definitions` | every [`CustomPropertyDefinition`](custom_property_definition.go) |
 | `client.CustomProperties().CreateCustomPropertyDefinition(ctx, customPropertyDefinitionCreateRequest CustomPropertyDefinitionCreateRequest) (*CustomPropertyDefinition, error)` | `POST /api/v1/custom-property-definitions` | [`CustomPropertyDefinition`](custom_property_definition.go) |
 | `client.CustomProperties().RetrieveCustomPropertyDefinition(ctx, id string) (*CustomPropertyDefinition, error)` | `GET /api/v1/custom-property-definitions/{id}` | [`CustomPropertyDefinition`](custom_property_definition.go) |
 | `client.CustomProperties().UpdateCustomPropertyDefinition(ctx, id string, customPropertyDefinitionUpdateRequest CustomPropertyDefinitionUpdateRequest) (*CustomPropertyDefinition, error)` | `PUT /api/v1/custom-property-definitions/{id}` | [`CustomPropertyDefinition`](custom_property_definition.go) |
@@ -101,7 +107,8 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.Customers().List(ctx, options *CustomersListOptions) (*CustomerListResponse, error)` | `GET /api/v1/customers` | [`CustomerListResponse`](customer_list_response.go) |
+| `client.Customers().List(ctx, options *CustomersListOptions) (*CustomersListPage, error)` | `GET /api/v1/customers` | [`CustomerListResponse`](customer_list_response.go) page of [`Customer`](customer.go) |
+| `client.Customers().ListAutoPaging(ctx, options *CustomersListOptions) *AutoPager[Customer]` | `GET /api/v1/customers` | every [`Customer`](customer.go) |
 | `client.Customers().Create(ctx, customerCreateRequest CustomerCreateRequest) (*Customer, error)` | `POST /api/v1/customers` | [`Customer`](customer.go) |
 | `client.Customers().Retrieve(ctx, idOrAlias string) (*Customer, error)` | `GET /api/v1/customers/{id_or_alias}` | [`Customer`](customer.go) |
 | `client.Customers().Replace(ctx, idOrAlias string, customerUpdateRequest CustomerUpdateRequest) (*Customer, error)` | `PUT /api/v1/customers/{id_or_alias}` | [`Customer`](customer.go) |
@@ -135,7 +142,8 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.Features().List(ctx, options *FeaturesListOptions) (*FeatureListResponse, error)` | `GET /api/v1/features` | [`FeatureListResponse`](feature_list_response.go) |
+| `client.Features().List(ctx, options *FeaturesListOptions) (*FeaturesListPage, error)` | `GET /api/v1/features` | [`FeatureListResponse`](feature_list_response.go) page of [`Feature`](feature.go) |
+| `client.Features().ListAutoPaging(ctx, options *FeaturesListOptions) *AutoPager[Feature]` | `GET /api/v1/features` | every [`Feature`](feature.go) |
 | `client.Features().Create(ctx, createFeatureRequest CreateFeatureRequest) (*Feature, error)` | `POST /api/v1/features` | [`Feature`](feature.go) |
 | `client.Features().Retrieve(ctx, idOrCode string) (*Feature, error)` | `GET /api/v1/features/{id_or_code}` | [`Feature`](feature.go) |
 | `client.Features().Update(ctx, idOrCode string, updateFeatureRequest UpdateFeatureRequest) (*Feature, error)` | `PATCH /api/v1/features/{id_or_code}` | [`Feature`](feature.go) |
@@ -148,7 +156,8 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.Invoices().List(ctx, options *InvoicesListOptions) (*InvoiceListResponse, error)` | `GET /api/v1/invoices` | [`InvoiceListResponse`](invoice_list_response.go) |
+| `client.Invoices().List(ctx, options *InvoicesListOptions) (*InvoicesListPage, error)` | `GET /api/v1/invoices` | [`InvoiceListResponse`](invoice_list_response.go) page of [`Invoice`](invoice.go) |
+| `client.Invoices().ListAutoPaging(ctx, options *InvoicesListOptions) *AutoPager[Invoice]` | `GET /api/v1/invoices` | every [`Invoice`](invoice.go) |
 | `client.Invoices().Retrieve(ctx, invoiceID string) (*Invoice, error)` | `GET /api/v1/invoices/{invoice_id}` | [`Invoice`](invoice.go) |
 | `client.Invoices().UpdateCustomProperties(ctx, invoiceID string, invoiceCustomPropertiesRequest InvoiceCustomPropertiesRequest) (*Invoice, error)` | `PATCH /api/v1/invoices/{invoice_id}/custom-properties` | [`Invoice`](invoice.go) |
 | `client.Invoices().Download(ctx, invoiceID string) ([]byte, error)` | `GET /api/v1/invoices/{invoice_id}/download` | bytes |
@@ -161,7 +170,8 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.Metrics().List(ctx, options *MetricsListOptions) (*MetricListResponse, error)` | `GET /api/v1/metrics` | [`MetricListResponse`](metric_list_response.go) |
+| `client.Metrics().List(ctx, options *MetricsListOptions) (*MetricsListPage, error)` | `GET /api/v1/metrics` | [`MetricListResponse`](metric_list_response.go) page of [`MetricSummary`](metric_summary.go) |
+| `client.Metrics().ListAutoPaging(ctx, options *MetricsListOptions) *AutoPager[MetricSummary]` | `GET /api/v1/metrics` | every [`MetricSummary`](metric_summary.go) |
 | `client.Metrics().Create(ctx, createMetricRequest CreateMetricRequest) (*Metric, error)` | `POST /api/v1/metrics` | [`Metric`](metric.go) |
 | `client.Metrics().Retrieve(ctx, metricID string) (*Metric, error)` | `GET /api/v1/metrics/{metric_id}` | [`Metric`](metric.go) |
 | `client.Metrics().Update(ctx, metricID string, updateMetricRequest UpdateMetricRequest) (*Metric, error)` | `PATCH /api/v1/metrics/{metric_id}` | [`Metric`](metric.go) |
@@ -198,7 +208,8 @@ in the `meteroid` package.
 | --- | --- | --- |
 | `client.Plans().ListPlanVersionEntitlements(ctx, planVersionID string) (*ResolvedEntitlementListResponse, error)` | `GET /api/v1/plan-versions/{plan_version_id}/entitlements` | [`ResolvedEntitlementListResponse`](resolved_entitlement_list_response.go) |
 | `client.Plans().CreatePlanVersionEntitlement(ctx, planVersionID string, createEntitlementsRequest CreateEntitlementsRequest) (*EntitlementListResponse, error)` | `POST /api/v1/plan-versions/{plan_version_id}/entitlements` | [`EntitlementListResponse`](entitlement_list_response.go) |
-| `client.Plans().List(ctx, options *PlansListOptions) (*PlanListResponse, error)` | `GET /api/v1/plans` | [`PlanListResponse`](plan_list_response.go) |
+| `client.Plans().List(ctx, options *PlansListOptions) (*PlansListPage, error)` | `GET /api/v1/plans` | [`PlanListResponse`](plan_list_response.go) page of [`Plan`](plan.go) |
+| `client.Plans().ListAutoPaging(ctx, options *PlansListOptions) *AutoPager[Plan]` | `GET /api/v1/plans` | every [`Plan`](plan.go) |
 | `client.Plans().Create(ctx, createPlanRequest CreatePlanRequest) (*Plan, error)` | `POST /api/v1/plans` | [`Plan`](plan.go) |
 | `client.Plans().UpdateVersionMinimum(ctx, planVersionID string, minimumCommitment MinimumCommitment) (*MinimumCommitment, error)` | `PUT /api/v1/plans/versions/{plan_version_id}/minimum` | [`MinimumCommitment`](minimum_commitment.go) |
 | `client.Plans().DeleteVersionMinimum(ctx, planVersionID string) error` | `DELETE /api/v1/plans/versions/{plan_version_id}/minimum` | nothing |
@@ -208,7 +219,8 @@ in the `meteroid` package.
 | `client.Plans().Archive(ctx, planID string) error` | `POST /api/v1/plans/{plan_id}/archive` | nothing |
 | `client.Plans().Publish(ctx, planID string) (*Plan, error)` | `POST /api/v1/plans/{plan_id}/publish` | [`Plan`](plan.go) |
 | `client.Plans().Unarchive(ctx, planID string) error` | `POST /api/v1/plans/{plan_id}/unarchive` | nothing |
-| `client.Plans().ListVersions(ctx, planID string, options *PlansListVersionsOptions) (*PlanVersionListResponse, error)` | `GET /api/v1/plans/{plan_id}/versions` | [`PlanVersionListResponse`](plan_version_list_response.go) |
+| `client.Plans().ListVersions(ctx, planID string, options *PlansListVersionsOptions) (*PlansListVersionsPage, error)` | `GET /api/v1/plans/{plan_id}/versions` | [`PlanVersionListResponse`](plan_version_list_response.go) page of [`PlanVersionSummary`](plan_version_summary.go) |
+| `client.Plans().ListVersionsAutoPaging(ctx, planID string, options *PlansListVersionsOptions) *AutoPager[PlanVersionSummary]` | `GET /api/v1/plans/{plan_id}/versions` | every [`PlanVersionSummary`](plan_version_summary.go) |
 
 ## Product families
 
@@ -216,7 +228,8 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.ProductFamilies().List(ctx, options *ProductFamiliesListOptions) (*ProductFamilyListResponse, error)` | `GET /api/v1/product_families` | [`ProductFamilyListResponse`](product_family_list_response.go) |
+| `client.ProductFamilies().List(ctx, options *ProductFamiliesListOptions) (*ProductFamiliesListPage, error)` | `GET /api/v1/product_families` | [`ProductFamilyListResponse`](product_family_list_response.go) page of [`ProductFamily`](product_family.go) |
+| `client.ProductFamilies().ListAutoPaging(ctx, options *ProductFamiliesListOptions) *AutoPager[ProductFamily]` | `GET /api/v1/product_families` | every [`ProductFamily`](product_family.go) |
 | `client.ProductFamilies().Create(ctx, productFamilyCreateRequest ProductFamilyCreateRequest) (*ProductFamily, error)` | `POST /api/v1/product_families` | [`ProductFamily`](product_family.go) |
 | `client.ProductFamilies().Retrieve(ctx, idOrAlias string) (*ProductFamily, error)` | `GET /api/v1/product_families/{id_or_alias}` | [`ProductFamily`](product_family.go) |
 
@@ -226,7 +239,8 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.Products().List(ctx, options *ProductsListOptions) (*ProductListResponse, error)` | `GET /api/v1/products` | [`ProductListResponse`](product_list_response.go) |
+| `client.Products().List(ctx, options *ProductsListOptions) (*ProductsListPage, error)` | `GET /api/v1/products` | [`ProductListResponse`](product_list_response.go) page of [`Product`](product.go) |
+| `client.Products().ListAutoPaging(ctx, options *ProductsListOptions) *AutoPager[Product]` | `GET /api/v1/products` | every [`Product`](product.go) |
 | `client.Products().Create(ctx, createProductRequest CreateProductRequest) (*Product, error)` | `POST /api/v1/products` | [`Product`](product.go) |
 | `client.Products().Retrieve(ctx, productID string) (*Product, error)` | `GET /api/v1/products/{product_id}` | [`Product`](product.go) |
 | `client.Products().Update(ctx, productID string, updateProductRequest UpdateProductRequest) (*Product, error)` | `PATCH /api/v1/products/{product_id}` | [`Product`](product.go) |
@@ -241,7 +255,8 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.Subscriptions().List(ctx, options *SubscriptionsListOptions) (*SubscriptionListResponse, error)` | `GET /api/v1/subscriptions` | [`SubscriptionListResponse`](subscription_list_response.go) |
+| `client.Subscriptions().List(ctx, options *SubscriptionsListOptions) (*SubscriptionsListPage, error)` | `GET /api/v1/subscriptions` | [`SubscriptionListResponse`](subscription_list_response.go) page of [`Subscription`](subscription.go) |
+| `client.Subscriptions().ListAutoPaging(ctx, options *SubscriptionsListOptions) *AutoPager[Subscription]` | `GET /api/v1/subscriptions` | every [`Subscription`](subscription.go) |
 | `client.Subscriptions().Create(ctx, subscriptionCreateRequest SubscriptionCreateRequest) (*SubscriptionDetails, error)` | `POST /api/v1/subscriptions` | [`SubscriptionDetails`](subscription_details.go) |
 | `client.Subscriptions().Retrieve(ctx, subscriptionID string) (*SubscriptionDetails, error)` | `GET /api/v1/subscriptions/{subscription_id}` | [`SubscriptionDetails`](subscription_details.go) |
 | `client.Subscriptions().Update(ctx, subscriptionID string, subscriptionUpdateRequest SubscriptionUpdateRequest) (*SubscriptionUpdateResponse, error)` | `PATCH /api/v1/subscriptions/{subscription_id}` | [`SubscriptionUpdateResponse`](subscription_update_response.go) |

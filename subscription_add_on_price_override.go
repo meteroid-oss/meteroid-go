@@ -21,7 +21,11 @@ func (v *SubscriptionAddOnPriceOverride) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "name", "price_entry")
+	fields, err := objectFields(data, "SubscriptionAddOnPriceOverride", "price_entry")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "name", "price_entry")
 	return nil
 }
 

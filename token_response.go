@@ -29,7 +29,11 @@ func (v *TokenResponse) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "access_token", "expires_in", "refresh_token", "scope", "token_type")
+	fields, err := objectFields(data, "TokenResponse", "access_token", "expires_in", "token_type")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "access_token", "expires_in", "refresh_token", "scope", "token_type")
 	return nil
 }
 

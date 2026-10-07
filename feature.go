@@ -40,7 +40,11 @@ func (v *Feature) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "code", "created_at", "description", "entitlement", "feature_type", "id", "name", "product", "status")
+	fields, err := objectFields(data, "Feature", "code", "created_at", "feature_type", "id", "name", "status")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "code", "created_at", "description", "entitlement", "feature_type", "id", "name", "product", "status")
 	return nil
 }
 

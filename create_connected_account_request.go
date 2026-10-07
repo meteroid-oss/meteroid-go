@@ -29,7 +29,11 @@ func (v *CreateConnectedAccountRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "connected_organization_id", "connection_type", "metadata", "platform_customer_id")
+	fields, err := objectFields(data, "CreateConnectedAccountRequest", "connected_organization_id")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "connected_organization_id", "connection_type", "metadata", "platform_customer_id")
 	return nil
 }
 

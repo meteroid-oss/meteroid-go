@@ -23,7 +23,11 @@ func (v *RotatedSecret) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "client_secret", "client_secret_hint")
+	fields, err := objectFields(data, "RotatedSecret", "client_secret", "client_secret_hint")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "client_secret", "client_secret_hint")
 	return nil
 }
 

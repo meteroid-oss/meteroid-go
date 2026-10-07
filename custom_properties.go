@@ -4,6 +4,7 @@ package meteroid
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -28,10 +29,8 @@ type CustomProperties struct {
 	client *Client
 }
 
-// ListCustomPropertyDefinitions sends GET /api/v1/custom-property-definitions.
-//
-// List custom property definitions
-func (a *CustomProperties) ListCustomPropertyDefinitions(ctx context.Context, options *CustomPropertiesListCustomPropertyDefinitionsOptions, opts ...RequestOption) (*CustomPropertyDefinitionListResponse, error) {
+// fetchListCustomPropertyDefinitions sends GET /api/v1/custom-property-definitions and decodes the response, for [CustomProperties.ListCustomPropertyDefinitions].
+func (a *CustomProperties) fetchListCustomPropertyDefinitions(ctx context.Context, options *CustomPropertiesListCustomPropertyDefinitionsOptions, opts ...RequestOption) (*CustomPropertyDefinitionListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/custom-property-definitions", opts)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
@@ -55,6 +54,82 @@ func (a *CustomProperties) ListCustomPropertyDefinitions(ctx context.Context, op
 		return nil, err
 	}
 	return &out, nil
+}
+
+// CustomPropertiesListCustomPropertyDefinitionsPage is a page of [CustomProperties.ListCustomPropertyDefinitions]. It embeds the
+// decoded [CustomPropertyDefinitionListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded CustomPropertyDefinitionListResponse.
+type CustomPropertiesListCustomPropertyDefinitionsPage struct {
+	CustomPropertyDefinitionListResponse
+
+	// Items holds the items of this page.
+	Items []CustomPropertyDefinition
+
+	next func(ctx context.Context) (*CustomPropertiesListCustomPropertyDefinitionsPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *CustomPropertiesListCustomPropertyDefinitionsPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *CustomPropertiesListCustomPropertyDefinitionsPage) NextPage(ctx context.Context) (*CustomPropertiesListCustomPropertyDefinitionsPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the CustomPropertyDefinitionListResponse of the page, as received.
+func (p CustomPropertiesListCustomPropertyDefinitionsPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.CustomPropertyDefinitionListResponse)
+}
+
+func (p *CustomPropertiesListCustomPropertyDefinitionsPage) pageItems() []CustomPropertyDefinition {
+	return p.Items
+}
+
+// ListCustomPropertyDefinitions sends GET /api/v1/custom-property-definitions and returns the first page of results.
+//
+// # List custom property definitions
+//
+// [CustomProperties.ListCustomPropertyDefinitionsAutoPaging] iterates over every item instead.
+func (a *CustomProperties) ListCustomPropertyDefinitions(ctx context.Context, options *CustomPropertiesListCustomPropertyDefinitionsOptions, opts ...RequestOption) (*CustomPropertiesListCustomPropertyDefinitionsPage, error) {
+	var params CustomPropertiesListCustomPropertyDefinitionsOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchListCustomPropertyDefinitions(ctx, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &CustomPropertiesListCustomPropertyDefinitionsPage{CustomPropertyDefinitionListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*CustomPropertiesListCustomPropertyDefinitionsPage, error) {
+		return a.ListCustomPropertyDefinitions(ctx, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListCustomPropertyDefinitionsAutoPaging iterates over every item of [CustomProperties.ListCustomPropertyDefinitions], fetching
+// further pages on demand.
+func (a *CustomProperties) ListCustomPropertyDefinitionsAutoPaging(ctx context.Context, options *CustomPropertiesListCustomPropertyDefinitionsOptions, opts ...RequestOption) *AutoPager[CustomPropertyDefinition] {
+	return newAutoPager[CustomPropertyDefinition](ctx, func(ctx context.Context) (*CustomPropertiesListCustomPropertyDefinitionsPage, error) {
+		return a.ListCustomPropertyDefinitions(ctx, options, opts...)
+	})
 }
 
 // CreateCustomPropertyDefinition sends POST /api/v1/custom-property-definitions.

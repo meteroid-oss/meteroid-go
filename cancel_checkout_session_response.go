@@ -19,7 +19,11 @@ func (v *CancelCheckoutSessionResponse) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "session")
+	fields, err := objectFields(data, "CancelCheckoutSessionResponse", "session")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "session")
 	return nil
 }
 

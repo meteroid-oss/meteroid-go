@@ -4,6 +4,7 @@ package meteroid
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -29,8 +30,8 @@ type Coupons struct {
 	client *Client
 }
 
-// List coupons
-func (a *Coupons) List(ctx context.Context, options *CouponsListOptions, opts ...RequestOption) (*CouponListResponse, error) {
+// fetchList sends GET /api/v1/coupons and decodes the response, for [Coupons.List].
+func (a *Coupons) fetchList(ctx context.Context, options *CouponsListOptions, opts ...RequestOption) (*CouponListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/coupons", opts)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
@@ -56,6 +57,78 @@ func (a *Coupons) List(ctx context.Context, options *CouponsListOptions, opts ..
 		return nil, err
 	}
 	return &out, nil
+}
+
+// CouponsListPage is a page of [Coupons.List]. It embeds the
+// decoded [CouponListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded CouponListResponse.
+type CouponsListPage struct {
+	CouponListResponse
+
+	// Items holds the items of this page.
+	Items []Coupon
+
+	next func(ctx context.Context) (*CouponsListPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *CouponsListPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *CouponsListPage) NextPage(ctx context.Context) (*CouponsListPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the CouponListResponse of the page, as received.
+func (p CouponsListPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.CouponListResponse)
+}
+
+func (p *CouponsListPage) pageItems() []Coupon { return p.Items }
+
+// List coupons
+//
+// [Coupons.ListAutoPaging] iterates over every item instead.
+func (a *Coupons) List(ctx context.Context, options *CouponsListOptions, opts ...RequestOption) (*CouponsListPage, error) {
+	var params CouponsListOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchList(ctx, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &CouponsListPage{CouponListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*CouponsListPage, error) {
+		return a.List(ctx, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListAutoPaging iterates over every item of [Coupons.List], fetching
+// further pages on demand.
+func (a *Coupons) ListAutoPaging(ctx context.Context, options *CouponsListOptions, opts ...RequestOption) *AutoPager[Coupon] {
+	return newAutoPager[Coupon](ctx, func(ctx context.Context) (*CouponsListPage, error) {
+		return a.List(ctx, options, opts...)
+	})
 }
 
 // Create a coupon

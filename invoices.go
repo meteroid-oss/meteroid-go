@@ -4,6 +4,7 @@ package meteroid
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -36,8 +37,8 @@ type Invoices struct {
 	client *Client
 }
 
-// List invoices with optional filtering by customer, subscription, or status.
-func (a *Invoices) List(ctx context.Context, options *InvoicesListOptions, opts ...RequestOption) (*InvoiceListResponse, error) {
+// fetchList sends GET /api/v1/invoices and decodes the response, for [Invoices.List].
+func (a *Invoices) fetchList(ctx context.Context, options *InvoicesListOptions, opts ...RequestOption) (*InvoiceListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/invoices", opts)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
@@ -72,6 +73,78 @@ func (a *Invoices) List(ctx context.Context, options *InvoicesListOptions, opts 
 		return nil, err
 	}
 	return &out, nil
+}
+
+// InvoicesListPage is a page of [Invoices.List]. It embeds the
+// decoded [InvoiceListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded InvoiceListResponse.
+type InvoicesListPage struct {
+	InvoiceListResponse
+
+	// Items holds the items of this page.
+	Items []Invoice
+
+	next func(ctx context.Context) (*InvoicesListPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *InvoicesListPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *InvoicesListPage) NextPage(ctx context.Context) (*InvoicesListPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the InvoiceListResponse of the page, as received.
+func (p InvoicesListPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.InvoiceListResponse)
+}
+
+func (p *InvoicesListPage) pageItems() []Invoice { return p.Items }
+
+// List invoices with optional filtering by customer, subscription, or status.
+//
+// [Invoices.ListAutoPaging] iterates over every item instead.
+func (a *Invoices) List(ctx context.Context, options *InvoicesListOptions, opts ...RequestOption) (*InvoicesListPage, error) {
+	var params InvoicesListOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchList(ctx, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &InvoicesListPage{InvoiceListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*InvoicesListPage, error) {
+		return a.List(ctx, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListAutoPaging iterates over every item of [Invoices.List], fetching
+// further pages on demand.
+func (a *Invoices) ListAutoPaging(ctx context.Context, options *InvoicesListOptions, opts ...RequestOption) *AutoPager[Invoice] {
+	return newAutoPager[Invoice](ctx, func(ctx context.Context) (*InvoicesListPage, error) {
+		return a.List(ctx, options, opts...)
+	})
 }
 
 // Retrieve sends GET /api/v1/invoices/{invoice_id}.

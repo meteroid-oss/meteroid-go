@@ -28,7 +28,11 @@ func (v *IngestEventsRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "allow_backfilling", "allow_partial_failures", "events")
+	fields, err := objectFields(data, "IngestEventsRequest", "events")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "allow_backfilling", "allow_partial_failures", "events")
 	return nil
 }
 

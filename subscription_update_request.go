@@ -38,7 +38,11 @@ func (v *SubscriptionUpdateRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "auto_advance_invoices", "charge_automatically", "custom_properties", "invoice_memo", "net_terms", "payment_methods_config", "purchase_order")
+	fields, err := objectFields(data, "SubscriptionUpdateRequest")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "auto_advance_invoices", "charge_automatically", "custom_properties", "invoice_memo", "net_terms", "payment_methods_config", "purchase_order")
 	return nil
 }
 

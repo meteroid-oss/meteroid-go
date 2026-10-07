@@ -19,7 +19,11 @@ func (v *BooleanResolvedEntitlementValue) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "enabled")
+	fields, err := objectFields(data, "BooleanResolvedEntitlementValue", "enabled")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "enabled")
 	return nil
 }
 

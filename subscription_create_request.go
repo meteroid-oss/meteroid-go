@@ -64,7 +64,11 @@ func (v *SubscriptionCreateRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "activation_condition", "add_ons", "auto_advance_invoices", "backdate_invoices", "billing_day_anchor", "charge_automatically", "coupon_codes", "custom_properties", "customer_id_or_alias", "end_date", "invoice_memo", "net_terms", "payment_methods_config", "plan_id", "price_components", "purchase_order", "skip_past_invoices", "start_date", "trial_days", "version")
+	fields, err := objectFields(data, "SubscriptionCreateRequest", "activation_condition", "customer_id_or_alias", "plan_id", "start_date")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "activation_condition", "add_ons", "auto_advance_invoices", "backdate_invoices", "billing_day_anchor", "charge_automatically", "coupon_codes", "custom_properties", "customer_id_or_alias", "end_date", "invoice_memo", "net_terms", "payment_methods_config", "plan_id", "price_components", "purchase_order", "skip_past_invoices", "start_date", "trial_days", "version")
 	return nil
 }
 

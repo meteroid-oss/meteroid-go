@@ -60,7 +60,11 @@ func (v *CheckoutSession) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "billing_day_anchor", "billing_start_date", "cancel_url", "checkout_type", "checkout_url", "completed_at", "coupon_code", "created_at", "customer_id", "expires_at", "id", "net_terms", "payment_methods_config", "plan_version_id", "status", "subscription_id", "success_url", "trial_duration_days")
+	fields, err := objectFields(data, "CheckoutSession", "checkout_type", "created_at", "customer_id", "id", "plan_version_id", "status")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "billing_day_anchor", "billing_start_date", "cancel_url", "checkout_type", "checkout_url", "completed_at", "coupon_code", "created_at", "customer_id", "expires_at", "id", "net_terms", "payment_methods_config", "plan_version_id", "status", "subscription_id", "success_url", "trial_duration_days")
 	return nil
 }
 

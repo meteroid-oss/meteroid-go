@@ -40,7 +40,11 @@ func (v *TokenRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "client_id", "client_secret", "code", "code_verifier", "grant_type", "redirect_uri", "refresh_token")
+	fields, err := objectFields(data, "TokenRequest", "grant_type")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "client_id", "client_secret", "code", "code_verifier", "grant_type", "redirect_uri", "refresh_token")
 	return nil
 }
 

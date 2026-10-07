@@ -50,7 +50,11 @@ func (v *CreatePlanRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "add_ons", "billing", "components", "currency", "description", "entitlements", "name", "plan_type", "product_family_id", "self_service_rank", "status", "tax_inclusive", "trial")
+	fields, err := objectFields(data, "CreatePlanRequest", "components", "currency", "name", "plan_type", "product_family_id", "status")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "add_ons", "billing", "components", "currency", "description", "entitlements", "name", "plan_type", "product_family_id", "self_service_rank", "status", "tax_inclusive", "trial")
 	return nil
 }
 

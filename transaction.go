@@ -60,7 +60,11 @@ func (v *Transaction) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "amount", "amount_refunded", "amount_reversed", "credit_note_id", "currency", "error", "id", "parent_transaction_id", "payment_method_id", "payment_method_info", "payment_type", "processed_at", "provider_transaction_id", "refund_mode", "reversal_kind", "reversal_reason", "status")
+	fields, err := objectFields(data, "Transaction", "amount", "amount_refunded", "amount_reversed", "currency", "id", "payment_type", "status")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "amount", "amount_refunded", "amount_reversed", "credit_note_id", "currency", "error", "id", "parent_transaction_id", "payment_method_id", "payment_method_info", "payment_type", "processed_at", "provider_transaction_id", "refund_mode", "reversal_kind", "reversal_reason", "status")
 	return nil
 }
 

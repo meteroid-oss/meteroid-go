@@ -4,6 +4,7 @@ package meteroid
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -31,8 +32,8 @@ type Features struct {
 	client *Client
 }
 
-// List features
-func (a *Features) List(ctx context.Context, options *FeaturesListOptions, opts ...RequestOption) (*FeatureListResponse, error) {
+// fetchList sends GET /api/v1/features and decodes the response, for [Features.List].
+func (a *Features) fetchList(ctx context.Context, options *FeaturesListOptions, opts ...RequestOption) (*FeatureListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/features", opts)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
@@ -60,6 +61,78 @@ func (a *Features) List(ctx context.Context, options *FeaturesListOptions, opts 
 		return nil, err
 	}
 	return &out, nil
+}
+
+// FeaturesListPage is a page of [Features.List]. It embeds the
+// decoded [FeatureListResponse], promoting its fields, with the Items of the page; a field
+// named like a page member stays reachable through the embedded FeatureListResponse.
+type FeaturesListPage struct {
+	FeatureListResponse
+
+	// Items holds the items of this page.
+	Items []Feature
+
+	next func(ctx context.Context) (*FeaturesListPage, error)
+}
+
+// HasNextPage reports whether another page follows this one.
+func (p *FeaturesListPage) HasNextPage() bool {
+	return p != nil && p.next != nil
+}
+
+// NextPage fetches the page after this one. It returns nil and no error after
+// the last page.
+func (p *FeaturesListPage) NextPage(ctx context.Context) (*FeaturesListPage, error) {
+	if !p.HasNextPage() {
+		return nil, nil
+	}
+	return p.next(ctx)
+}
+
+// MarshalJSON encodes the FeatureListResponse of the page, as received.
+func (p FeaturesListPage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&p.FeatureListResponse)
+}
+
+func (p *FeaturesListPage) pageItems() []Feature { return p.Items }
+
+// List features
+//
+// [Features.ListAutoPaging] iterates over every item instead.
+func (a *Features) List(ctx context.Context, options *FeaturesListOptions, opts ...RequestOption) (*FeaturesListPage, error) {
+	var params FeaturesListOptions
+	if options != nil {
+		params = *options
+	}
+	resp, err := a.fetchList(ctx, &params, opts...)
+	if err != nil {
+		return nil, err
+	}
+	page := &FeaturesListPage{FeatureListResponse: *resp, Items: resp.Data}
+	if len(page.Items) == 0 {
+		return page, nil
+	}
+	current := int32(0)
+	if params.Page != nil {
+		current = *params.Page
+	}
+	if reached(current+1, resp.PaginationMeta.TotalPages) {
+		return page, nil
+	}
+	next := current + 1
+	params.Page = &next
+	page.next = func(ctx context.Context) (*FeaturesListPage, error) {
+		return a.List(ctx, &params, opts...)
+	}
+	return page, nil
+}
+
+// ListAutoPaging iterates over every item of [Features.List], fetching
+// further pages on demand.
+func (a *Features) ListAutoPaging(ctx context.Context, options *FeaturesListOptions, opts ...RequestOption) *AutoPager[Feature] {
+	return newAutoPager[Feature](ctx, func(ctx context.Context) (*FeaturesListPage, error) {
+		return a.List(ctx, options, opts...)
+	})
 }
 
 // Create a feature

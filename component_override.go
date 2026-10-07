@@ -23,7 +23,11 @@ func (v *ComponentOverride) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(data, "component_id", "name", "price_entry")
+	fields, err := objectFields(data, "ComponentOverride", "component_id", "name", "price_entry")
+	if err != nil {
+		return err
+	}
+	v.ExtraFields = extraFields(fields, "component_id", "name", "price_entry")
 	return nil
 }
 
