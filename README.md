@@ -1,6 +1,8 @@
 # Meteroid Go SDK
 
-Meteroid API client
+The official Go SDK for [Meteroid](https://meteroid.com), the open-source billing and pricing platform. Meteroid manages subscriptions, usage-based billing and metering, invoicing and revenue analytics; this library calls its REST API and verifies its webhooks, against Meteroid Cloud (`https://api.meteroid.com`) or a self-hosted instance.
+
+[Website](https://meteroid.com) · [Documentation](https://docs.meteroid.com) · [API reference](https://docs.meteroid.com/api-reference) · [Meteroid on GitHub](https://github.com/meteroid-oss/meteroid)
 
 Requires Go 1.23 or later.
 
@@ -15,7 +17,7 @@ Every method of the API is listed in [api.md](api.md).
 ```go
 import meteroid "github.com/meteroid-oss/meteroid-go"
 
-client := meteroid.New("your-api-key", &meteroid.Options{ServerURL: "https://api.example.com"})
+client := meteroid.New("your-api-key", &meteroid.Options{ServerURL: "https://api.meteroid.com"})
 
 addOn, err := client.AddOns().Retrieve(ctx, "addon_id")
 if err != nil {
