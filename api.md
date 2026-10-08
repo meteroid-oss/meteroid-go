@@ -6,7 +6,7 @@ resource. Each method also takes trailing `...RequestOption`s, such as `WithMaxR
 `WithTimeout`, `WithHeader` or `WithResponseInto`, for that call. Models and option structs are
 in the `meteroid` package.
 
-[Add ons](#add-ons) · [Batch jobs](#batch-jobs) · [Checkout sessions](#checkout-sessions) · [Connect](#connect) · [Coupons](#coupons) · [Credit notes](#credit-notes) · [Custom properties](#custom-properties) · [Customers](#customers) · [Entitlements](#entitlements) · [Events](#events) · [Features](#features) · [Invoices](#invoices) · [Metrics](#metrics) · [Oauth](#oauth) · [Oauth apps](#oauth-apps) · [Plans](#plans) · [Product families](#product-families) · [Products](#products) · [Subscriptions](#subscriptions) · [Usage](#usage)
+[Add ons](#add-ons) · [Add ons entitlements](#add-ons-entitlements) · [Batch jobs](#batch-jobs) · [Checkout sessions](#checkout-sessions) · [Connect](#connect) · [Coupons](#coupons) · [Credit notes](#credit-notes) · [Custom properties](#custom-properties) · [Customers](#customers) · [Entitlements](#entitlements) · [Events](#events) · [Features](#features) · [Invoices](#invoices) · [Metrics](#metrics) · [Oauth](#oauth) · [Oauth apps](#oauth-apps) · [Plans](#plans) · [Plans versions](#plans-versions) · [Product families](#product-families) · [Products](#products) · [Products entitlements](#products-entitlements) · [Subscriptions](#subscriptions) · [Usage](#usage)
 
 ## Add ons
 
@@ -20,9 +20,16 @@ in the `meteroid` package.
 | `client.AddOns().Retrieve(ctx, addonID string) (*AddOn, error)` | `GET /api/v1/addons/{addon_id}` | [`AddOn`](add_on.go) |
 | `client.AddOns().Update(ctx, addonID string, updateAddOnRequest UpdateAddOnRequest) (*AddOn, error)` | `PATCH /api/v1/addons/{addon_id}` | [`AddOn`](add_on.go) |
 | `client.AddOns().Archive(ctx, addonID string) error` | `POST /api/v1/addons/{addon_id}/archive` | nothing |
-| `client.AddOns().ListEntitlements(ctx, addonID string) (*ResolvedEntitlementListResponse, error)` | `GET /api/v1/addons/{addon_id}/entitlements` | [`ResolvedEntitlementListResponse`](resolved_entitlement_list_response.go) |
-| `client.AddOns().CreateEntitlement(ctx, addonID string, createEntitlementsRequest CreateEntitlementsRequest) (*EntitlementListResponse, error)` | `POST /api/v1/addons/{addon_id}/entitlements` | [`EntitlementListResponse`](entitlement_list_response.go) |
 | `client.AddOns().Unarchive(ctx, addonID string) error` | `POST /api/v1/addons/{addon_id}/unarchive` | nothing |
+
+### Add ons entitlements
+
+[`client.AddOns().Entitlements()`](add_ons_entitlements.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.AddOns().Entitlements().List(ctx, addonID string) (*ResolvedEntitlementListResponse, error)` | `GET /api/v1/addons/{addon_id}/entitlements` | [`ResolvedEntitlementListResponse`](resolved_entitlement_list_response.go) |
+| `client.AddOns().Entitlements().Create(ctx, addonID string, createEntitlementsRequest CreateEntitlementsRequest) (*EntitlementListResponse, error)` | `POST /api/v1/addons/{addon_id}/entitlements` | [`EntitlementListResponse`](entitlement_list_response.go) |
 
 ## Batch jobs
 
@@ -211,16 +218,23 @@ in the `meteroid` package.
 | `client.Plans().List(ctx, options *PlansListOptions) (*PlansListPage, error)` | `GET /api/v1/plans` | [`PlanListResponse`](plan_list_response.go) page of [`Plan`](plan.go) |
 | `client.Plans().ListAutoPaging(ctx, options *PlansListOptions) *AutoPager[Plan]` | `GET /api/v1/plans` | every [`Plan`](plan.go) |
 | `client.Plans().Create(ctx, createPlanRequest CreatePlanRequest) (*Plan, error)` | `POST /api/v1/plans` | [`Plan`](plan.go) |
-| `client.Plans().UpdateVersionMinimum(ctx, planVersionID string, minimumCommitment MinimumCommitment) (*MinimumCommitment, error)` | `PUT /api/v1/plans/versions/{plan_version_id}/minimum` | [`MinimumCommitment`](minimum_commitment.go) |
-| `client.Plans().DeleteVersionMinimum(ctx, planVersionID string) error` | `DELETE /api/v1/plans/versions/{plan_version_id}/minimum` | nothing |
 | `client.Plans().Retrieve(ctx, planID string, options *PlansRetrieveOptions) (*Plan, error)` | `GET /api/v1/plans/{plan_id}` | [`Plan`](plan.go) |
 | `client.Plans().Replace(ctx, planID string, replacePlanRequest ReplacePlanRequest) (*Plan, error)` | `PUT /api/v1/plans/{plan_id}` | [`Plan`](plan.go) |
 | `client.Plans().Update(ctx, planID string, patchPlanRequest PatchPlanRequest) (*Plan, error)` | `PATCH /api/v1/plans/{plan_id}` | [`Plan`](plan.go) |
 | `client.Plans().Archive(ctx, planID string) error` | `POST /api/v1/plans/{plan_id}/archive` | nothing |
 | `client.Plans().Publish(ctx, planID string) (*Plan, error)` | `POST /api/v1/plans/{plan_id}/publish` | [`Plan`](plan.go) |
 | `client.Plans().Unarchive(ctx, planID string) error` | `POST /api/v1/plans/{plan_id}/unarchive` | nothing |
-| `client.Plans().ListVersions(ctx, planID string, options *PlansListVersionsOptions) (*PlansListVersionsPage, error)` | `GET /api/v1/plans/{plan_id}/versions` | [`PlanVersionListResponse`](plan_version_list_response.go) page of [`PlanVersionSummary`](plan_version_summary.go) |
-| `client.Plans().ListVersionsAutoPaging(ctx, planID string, options *PlansListVersionsOptions) *AutoPager[PlanVersionSummary]` | `GET /api/v1/plans/{plan_id}/versions` | every [`PlanVersionSummary`](plan_version_summary.go) |
+
+### Plans versions
+
+[`client.Plans().Versions()`](plans_versions.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.Plans().Versions().UpdateMinimum(ctx, planVersionID string, minimumCommitment MinimumCommitment) (*MinimumCommitment, error)` | `PUT /api/v1/plans/versions/{plan_version_id}/minimum` | [`MinimumCommitment`](minimum_commitment.go) |
+| `client.Plans().Versions().DeleteMinimum(ctx, planVersionID string) error` | `DELETE /api/v1/plans/versions/{plan_version_id}/minimum` | nothing |
+| `client.Plans().Versions().List(ctx, planID string, options *PlansVersionsListOptions) (*PlansVersionsListPage, error)` | `GET /api/v1/plans/{plan_id}/versions` | [`PlanVersionListResponse`](plan_version_list_response.go) page of [`PlanVersionSummary`](plan_version_summary.go) |
+| `client.Plans().Versions().ListAutoPaging(ctx, planID string, options *PlansVersionsListOptions) *AutoPager[PlanVersionSummary]` | `GET /api/v1/plans/{plan_id}/versions` | every [`PlanVersionSummary`](plan_version_summary.go) |
 
 ## Product families
 
@@ -245,9 +259,16 @@ in the `meteroid` package.
 | `client.Products().Retrieve(ctx, productID string) (*Product, error)` | `GET /api/v1/products/{product_id}` | [`Product`](product.go) |
 | `client.Products().Update(ctx, productID string, updateProductRequest UpdateProductRequest) (*Product, error)` | `PATCH /api/v1/products/{product_id}` | [`Product`](product.go) |
 | `client.Products().Archive(ctx, productID string) error` | `POST /api/v1/products/{product_id}/archive` | nothing |
-| `client.Products().ListEntitlements(ctx, productID string) (*ResolvedEntitlementListResponse, error)` | `GET /api/v1/products/{product_id}/entitlements` | [`ResolvedEntitlementListResponse`](resolved_entitlement_list_response.go) |
-| `client.Products().CreateEntitlement(ctx, productID string, createEntitlementsRequest CreateEntitlementsRequest) (*EntitlementListResponse, error)` | `POST /api/v1/products/{product_id}/entitlements` | [`EntitlementListResponse`](entitlement_list_response.go) |
 | `client.Products().Unarchive(ctx, productID string) error` | `POST /api/v1/products/{product_id}/unarchive` | nothing |
+
+### Products entitlements
+
+[`client.Products().Entitlements()`](products_entitlements.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.Products().Entitlements().List(ctx, productID string) (*ResolvedEntitlementListResponse, error)` | `GET /api/v1/products/{product_id}/entitlements` | [`ResolvedEntitlementListResponse`](resolved_entitlement_list_response.go) |
+| `client.Products().Entitlements().Create(ctx, productID string, createEntitlementsRequest CreateEntitlementsRequest) (*EntitlementListResponse, error)` | `POST /api/v1/products/{product_id}/entitlements` | [`EntitlementListResponse`](entitlement_list_response.go) |
 
 ## Subscriptions
 

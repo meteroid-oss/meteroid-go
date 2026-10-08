@@ -30,6 +30,11 @@ type Products struct {
 	client *Client
 }
 
+// Entitlements returns the entitlements API.
+func (a *Products) Entitlements() *ProductsEntitlements {
+	return &ProductsEntitlements{client: a.client}
+}
+
 // fetchList sends GET /api/v1/products and decodes the response, for [Products.List].
 func (a *Products) fetchList(ctx context.Context, options *ProductsListOptions, opts ...RequestOption) (*ProductListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/products", opts)
@@ -195,52 +200,6 @@ func (a *Products) Archive(ctx context.Context, productID string, opts ...Reques
 		"429": errorSchema[RestErrorResponse],
 	}
 	return a.client.execute(ctx, req, nil)
-}
-
-// ListEntitlements sends GET /api/v1/products/{product_id}/entitlements.
-//
-// List product entitlements
-func (a *Products) ListEntitlements(ctx context.Context, productID string, opts ...RequestOption) (*ResolvedEntitlementListResponse, error) {
-	req := newRequest(http.MethodGet, "/api/v1/products/{product_id}/entitlements", opts)
-	req.SetPathParam("product_id", productID)
-	req.errors = errorSchemas{
-		"401": errorSchema[RestErrorResponse],
-		"404": errorSchema[RestErrorResponse],
-		"429": errorSchema[RestErrorResponse],
-	}
-	var out ResolvedEntitlementListResponse
-	if err := a.client.execute(ctx, req, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// CreateEntitlement sends POST /api/v1/products/{product_id}/entitlements.
-//
-// # Create product entitlements
-//
-// A product has no entitlement rows of its own: its entitlements are the feature-level
-// defaults of the features scoped to it, which is what `GET` on this path resolves. Every
-// spec must therefore target a feature belonging to `product_id`. Features that already
-// carry a default entitlement are skipped.
-//
-// Specs are validated up front, but the writes are not atomic: each feature is written on
-// its own, so a failure part-way can leave earlier specs committed. Retrying is safe.
-func (a *Products) CreateEntitlement(ctx context.Context, productID string, createEntitlementsRequest CreateEntitlementsRequest, opts ...RequestOption) (*EntitlementListResponse, error) {
-	req := newRequest(http.MethodPost, "/api/v1/products/{product_id}/entitlements", opts)
-	req.SetPathParam("product_id", productID)
-	req.errors = errorSchemas{
-		"400": errorSchema[RestErrorResponse],
-		"401": errorSchema[RestErrorResponse],
-		"404": errorSchema[RestErrorResponse],
-		"429": errorSchema[RestErrorResponse],
-	}
-	req.SetJSONBody(createEntitlementsRequest)
-	var out EntitlementListResponse
-	if err := a.client.execute(ctx, req, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
 }
 
 // Unarchive a product

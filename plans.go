@@ -39,19 +39,14 @@ type PlansRetrieveOptions struct {
 	Version *string
 }
 
-// PlansListVersionsOptions carries the optional query and header parameters of
-// [Plans.ListVersions]. Leave a field nil to omit it.
-type PlansListVersionsOptions struct {
-	// Page number (0-indexed)
-	Page *int32
-
-	// Number of items per page
-	PerPage *int32
-}
-
 // Plans groups the plans operations of the Meteroid API.
 type Plans struct {
 	client *Client
+}
+
+// Versions returns the versions API.
+func (a *Plans) Versions() *PlansVersions {
+	return &PlansVersions{client: a.client}
 }
 
 // ListPlanVersionEntitlements sends GET /api/v1/plan-versions/{plan_version_id}/entitlements.
@@ -225,40 +220,6 @@ func (a *Plans) Create(ctx context.Context, createPlanRequest CreatePlanRequest,
 	return &out, nil
 }
 
-// UpdateVersionMinimum sends PUT /api/v1/plans/versions/{plan_version_id}/minimum.
-//
-// Set or replace the plan-level minimum commitment for a draft plan version.
-func (a *Plans) UpdateVersionMinimum(ctx context.Context, planVersionID string, minimumCommitment MinimumCommitment, opts ...RequestOption) (*MinimumCommitment, error) {
-	req := newRequest(http.MethodPut, "/api/v1/plans/versions/{plan_version_id}/minimum", opts)
-	req.SetPathParam("plan_version_id", planVersionID)
-	req.errors = errorSchemas{
-		"400": errorSchema[RestErrorResponse],
-		"401": errorSchema[RestErrorResponse],
-		"404": errorSchema[RestErrorResponse],
-		"429": errorSchema[RestErrorResponse],
-	}
-	req.SetJSONBody(minimumCommitment)
-	var out MinimumCommitment
-	if err := a.client.execute(ctx, req, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// DeleteVersionMinimum sends DELETE /api/v1/plans/versions/{plan_version_id}/minimum.
-//
-// Remove the plan-level minimum commitment for a draft plan version.
-func (a *Plans) DeleteVersionMinimum(ctx context.Context, planVersionID string, opts ...RequestOption) error {
-	req := newRequest(http.MethodDelete, "/api/v1/plans/versions/{plan_version_id}/minimum", opts)
-	req.SetPathParam("plan_version_id", planVersionID)
-	req.errors = errorSchemas{
-		"401": errorSchema[RestErrorResponse],
-		"404": errorSchema[RestErrorResponse],
-		"429": errorSchema[RestErrorResponse],
-	}
-	return a.client.execute(ctx, req, nil)
-}
-
 // Retrieve sends GET /api/v1/plans/{plan_id}.
 //
 // # Get plan details
@@ -367,100 +328,4 @@ func (a *Plans) Unarchive(ctx context.Context, planID string, opts ...RequestOpt
 		"429": errorSchema[RestErrorResponse],
 	}
 	return a.client.execute(ctx, req, nil)
-}
-
-// fetchListVersions sends GET /api/v1/plans/{plan_id}/versions and decodes the response, for [Plans.ListVersions].
-func (a *Plans) fetchListVersions(ctx context.Context, planID string, options *PlansListVersionsOptions, opts ...RequestOption) (*PlanVersionListResponse, error) {
-	req := newRequest(http.MethodGet, "/api/v1/plans/{plan_id}/versions", opts)
-	req.SetPathParam("plan_id", planID)
-	req.errors = errorSchemas{
-		"401": errorSchema[RestErrorResponse],
-		"404": errorSchema[RestErrorResponse],
-		"429": errorSchema[RestErrorResponse],
-	}
-	if options != nil && options.Page != nil {
-		req.SetQueryParam("page", formatInt(int64(*options.Page)))
-	}
-	if options != nil && options.PerPage != nil {
-		req.SetQueryParam("per_page", formatInt(int64(*options.PerPage)))
-	}
-	var out PlanVersionListResponse
-	if err := a.client.execute(ctx, req, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// PlansListVersionsPage is a page of [Plans.ListVersions]. It embeds the
-// decoded [PlanVersionListResponse], promoting its fields, with the Items of the page; a field
-// named like a page member stays reachable through the embedded PlanVersionListResponse.
-type PlansListVersionsPage struct {
-	PlanVersionListResponse
-
-	// Items holds the items of this page.
-	Items []PlanVersionSummary
-
-	next func(ctx context.Context) (*PlansListVersionsPage, error)
-}
-
-// HasNextPage reports whether another page follows this one.
-func (p *PlansListVersionsPage) HasNextPage() bool {
-	return p != nil && p.next != nil
-}
-
-// NextPage fetches the page after this one. It returns nil and no error after
-// the last page.
-func (p *PlansListVersionsPage) NextPage(ctx context.Context) (*PlansListVersionsPage, error) {
-	if !p.HasNextPage() {
-		return nil, nil
-	}
-	return p.next(ctx)
-}
-
-// MarshalJSON encodes the PlanVersionListResponse of the page, as received.
-func (p PlansListVersionsPage) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&p.PlanVersionListResponse)
-}
-
-func (p *PlansListVersionsPage) pageItems() []PlanVersionSummary { return p.Items }
-
-// ListVersions sends GET /api/v1/plans/{plan_id}/versions and returns the first page of results.
-//
-// # List plan versions
-//
-// [Plans.ListVersionsAutoPaging] iterates over every item instead.
-func (a *Plans) ListVersions(ctx context.Context, planID string, options *PlansListVersionsOptions, opts ...RequestOption) (*PlansListVersionsPage, error) {
-	var params PlansListVersionsOptions
-	if options != nil {
-		params = *options
-	}
-	resp, err := a.fetchListVersions(ctx, planID, &params, opts...)
-	if err != nil {
-		return nil, err
-	}
-	page := &PlansListVersionsPage{PlanVersionListResponse: *resp, Items: resp.Data}
-	if len(page.Items) == 0 {
-		return page, nil
-	}
-	current := int32(0)
-	if params.Page != nil {
-		current = *params.Page
-	}
-	if reached(current+1, resp.PaginationMeta.TotalPages) {
-		return page, nil
-	}
-	next := current + 1
-	params.Page = &next
-	page.next = func(ctx context.Context) (*PlansListVersionsPage, error) {
-		return a.ListVersions(ctx, planID, &params, opts...)
-	}
-	return page, nil
-}
-
-// ListVersionsAutoPaging iterates over every item of [Plans.ListVersions], fetching
-// further pages on demand.
-func (a *Plans) ListVersionsAutoPaging(ctx context.Context, planID string, options *PlansListVersionsOptions, opts ...RequestOption) *AutoPager[PlanVersionSummary] {
-	return newAutoPager[PlanVersionSummary](ctx, func(ctx context.Context) (*PlansListVersionsPage, error) {
-		return a.ListVersions(ctx, planID, options, opts...)
-	})
 }
