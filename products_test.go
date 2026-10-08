@@ -38,18 +38,6 @@ func TestProducts_Archive(t *testing.T) {
 	expect(t, requests, "POST /api/v1/products/product_id/archive")
 }
 
-func TestProducts_ListEntitlements(t *testing.T) {
-	client, requests := mock(200, "application/json", `{"data":[{"feature":{"code":"sample","id":"feature_id_53","name":"sample"},"value":{"type":"BOOLEAN","enabled":false}}]}`)
-	call(t, client.Products().ListEntitlements, "product_id")
-	expect(t, requests, "GET /api/v1/products/product_id/entitlements")
-}
-
-func TestProducts_CreateEntitlement(t *testing.T) {
-	client, requests := mock(200, "application/json", `{"data":[{"created_at":"2023-12-31T23:59:59.999-05:30","feature_id":"feature_id_39","id":"entitlement_id_2","updated_at":"2024-03-15T10:30:45.123+02:00","value":{"type":"BOOLEAN","enabled":false}}]}`)
-	call(t, client.Products().CreateEntitlement, "product_id", decode[meteroid.CreateEntitlementsRequest](t, `{"entitlements":[{"feature_id":"feature_id_9","value":{"type":"BOOLEAN","enabled":false}}]}`))
-	expect(t, requests, "POST /api/v1/products/product_id/entitlements")
-}
-
 func TestProducts_Unarchive(t *testing.T) {
 	client, requests := mock(204, "", ``)
 	call(t, client.Products().Unarchive, "product_id")

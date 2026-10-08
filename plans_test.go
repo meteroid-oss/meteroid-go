@@ -32,18 +32,6 @@ func TestPlans_Create(t *testing.T) {
 	expect(t, requests, "POST /api/v1/plans")
 }
 
-func TestPlans_UpdateVersionMinimum(t *testing.T) {
-	client, requests := mock(200, "application/json", `{"amount":"sample","scope":{"type":"all_components"}}`)
-	call(t, client.Plans().UpdateVersionMinimum, "plan_version_id", decode[meteroid.MinimumCommitment](t, `{"amount":"sample","scope":{"type":"all_components"}}`))
-	expect(t, requests, "PUT /api/v1/plans/versions/plan_version_id/minimum")
-}
-
-func TestPlans_DeleteVersionMinimum(t *testing.T) {
-	client, requests := mock(204, "", ``)
-	call(t, client.Plans().DeleteVersionMinimum, "plan_version_id")
-	expect(t, requests, "DELETE /api/v1/plans/versions/plan_version_id/minimum")
-}
-
 func TestPlans_Retrieve(t *testing.T) {
 	client, requests := mock(200, "application/json", `{"available_parameters":{},"created_at":"2023-12-31T23:59:59.999-05:30","currency":"sample","id":"plan_id_13","name":"sample","net_terms":2147483647,"plan_type":"FREE","price_components":[{"id":"price_component_id_38","name":"sample"}],"product_family":{"id":"product_family_id_66","name":"sample"},"status":"ARCHIVED","tax_inclusive":false,"version":123456789,"version_id":"plan_version_id_84"}`)
 	call(t, client.Plans().Retrieve, "plan_id", nil)
@@ -78,10 +66,4 @@ func TestPlans_Unarchive(t *testing.T) {
 	client, requests := mock(204, "", ``)
 	call(t, client.Plans().Unarchive, "plan_id")
 	expect(t, requests, "POST /api/v1/plans/plan_id/unarchive")
-}
-
-func TestPlans_ListVersions(t *testing.T) {
-	client, requests := mock(200, "application/json", `{"data":[{"created_at":"2023-12-31T23:59:59.999-05:30","currency":"sample","id":"plan_version_id_2","is_draft":true,"version":-2147483648}],"pagination_meta":{"page":-123456789,"per_page":-123456789,"total_items":-9007199254740993,"total_pages":123456789}}`)
-	call(t, client.Plans().ListVersions, "plan_id", nil)
-	expect(t, requests, "GET /api/v1/plans/plan_id/versions")
 }

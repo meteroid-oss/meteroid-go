@@ -33,6 +33,11 @@ type AddOns struct {
 	client *Client
 }
 
+// Entitlements returns the entitlements API.
+func (a *AddOns) Entitlements() *AddOnsEntitlements {
+	return &AddOnsEntitlements{client: a.client}
+}
+
 // fetchList sends GET /api/v1/addons and decodes the response, for [AddOns.List].
 func (a *AddOns) fetchList(ctx context.Context, options *AddOnsListOptions, opts ...RequestOption) (*AddOnListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/addons", opts)
@@ -199,46 +204,6 @@ func (a *AddOns) Archive(ctx context.Context, addonID string, opts ...RequestOpt
 		"429": errorSchema[RestErrorResponse],
 	}
 	return a.client.execute(ctx, req, nil)
-}
-
-// ListEntitlements sends GET /api/v1/addons/{addon_id}/entitlements.
-//
-// List add-on entitlements
-func (a *AddOns) ListEntitlements(ctx context.Context, addonID string, opts ...RequestOption) (*ResolvedEntitlementListResponse, error) {
-	req := newRequest(http.MethodGet, "/api/v1/addons/{addon_id}/entitlements", opts)
-	req.SetPathParam("addon_id", addonID)
-	req.errors = errorSchemas{
-		"401": errorSchema[RestErrorResponse],
-		"404": errorSchema[RestErrorResponse],
-		"429": errorSchema[RestErrorResponse],
-	}
-	var out ResolvedEntitlementListResponse
-	if err := a.client.execute(ctx, req, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// CreateEntitlement sends POST /api/v1/addons/{addon_id}/entitlements.
-//
-// # Create add-on entitlements
-//
-// Entitlements already present on this add-on are skipped.
-func (a *AddOns) CreateEntitlement(ctx context.Context, addonID string, createEntitlementsRequest CreateEntitlementsRequest, opts ...RequestOption) (*EntitlementListResponse, error) {
-	req := newRequest(http.MethodPost, "/api/v1/addons/{addon_id}/entitlements", opts)
-	req.SetPathParam("addon_id", addonID)
-	req.errors = errorSchemas{
-		"400": errorSchema[RestErrorResponse],
-		"401": errorSchema[RestErrorResponse],
-		"404": errorSchema[RestErrorResponse],
-		"429": errorSchema[RestErrorResponse],
-	}
-	req.SetJSONBody(createEntitlementsRequest)
-	var out EntitlementListResponse
-	if err := a.client.execute(ctx, req, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
 }
 
 // Unarchive an add-on
