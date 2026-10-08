@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.29.0](https://github.com/meteroid-oss/meteroid-go/compare/v0.28.0...v0.29.0) (2026-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** update SDKs to meteroid 0.1.0 ([#9](https://github.com/meteroid-oss/meteroid-go/issues/9))
+
+### Features
+
+* **api:** update SDKs to meteroid 0.1.0 ([#9](https://github.com/meteroid-oss/meteroid-go/issues/9)) ([71ee10a](https://github.com/meteroid-oss/meteroid-go/commit/71ee10a371f75c0053f43ac388b5881bad2755b2))
+
 ## [0.28.0](https://github.com/meteroid-oss/meteroid-go/compare/v0.27.1...v0.28.0) (2026-10-07)
 
 
