@@ -10,6 +10,6 @@ import (
 
 func TestEvents_Ingest(t *testing.T) {
 	client, requests := mock(200, "application/json", `{}`)
-	call(t, client.Events().Ingest, decode[meteroid.IngestEventsRequest](t, `{"events":[{"code":"sample","customer_id":"sample","event_id":"sample","timestamp":"sample"}]}`))
+	call(t, client.Events().Ingest, decode[meteroid.IngestEventsRequest](t, `{"events":[{"code":"sample","customer_id":"sample","event_id":"sample"}]}`))
 	expect(t, requests, "POST /api/v1/events/ingest")
 }

@@ -6,7 +6,7 @@ resource. Each method also takes trailing `...RequestOption`s, such as `WithMaxR
 `WithTimeout`, `WithHeader` or `WithResponseInto`, for that call. Models and option structs are
 in the `meteroid` package.
 
-[Add ons](#add-ons) · [Add ons entitlements](#add-ons-entitlements) · [Batch jobs](#batch-jobs) · [Checkout sessions](#checkout-sessions) · [Connect](#connect) · [Coupons](#coupons) · [Credit notes](#credit-notes) · [Custom properties](#custom-properties) · [Customers](#customers) · [Entitlements](#entitlements) · [Events](#events) · [Features](#features) · [Invoices](#invoices) · [Metrics](#metrics) · [Oauth](#oauth) · [Oauth apps](#oauth-apps) · [Plans](#plans) · [Plans versions](#plans-versions) · [Product families](#product-families) · [Products](#products) · [Products entitlements](#products-entitlements) · [Subscriptions](#subscriptions) · [Usage](#usage)
+[Add ons](#add-ons) · [Add ons entitlements](#add-ons-entitlements) · [Batch jobs](#batch-jobs) · [Checkout sessions](#checkout-sessions) · [Connect](#connect) · [Coupons](#coupons) · [Credit notes](#credit-notes) · [Custom properties](#custom-properties) · [Customers](#customers) · [Entitlements](#entitlements) · [Events](#events) · [Features](#features) · [Invoices](#invoices) · [Metrics](#metrics) · [Oauth](#oauth) · [Oauth apps](#oauth-apps) · [Plans](#plans) · [Plans versions](#plans-versions) · [Product families](#product-families) · [Products](#products) · [Products entitlements](#products-entitlements) · [Subscriptions](#subscriptions) · [Usage](#usage) · [Webhook endpoints](#webhook-endpoints) · [Webhook endpoints endpoints](#webhook-endpoints-endpoints)
 
 ## Add ons
 
@@ -294,3 +294,27 @@ in the `meteroid` package.
 | `client.Usage().RetrieveCustomer(ctx, customerID string, startDate Date, endDate Date, options *UsageRetrieveCustomerOptions) (*UsageResponse, error)` | `GET /api/v1/usage/customer/{customer_id}` | [`UsageResponse`](usage_response.go) |
 | `client.Usage().RetrieveSubscription(ctx, subscriptionID string, options *UsageRetrieveSubscriptionOptions) (*UsageResponse, error)` | `GET /api/v1/usage/subscription/{subscription_id}` | [`UsageResponse`](usage_response.go) |
 | `client.Usage().RetrieveSummary(ctx, startDate Date, endDate Date, options *UsageRetrieveSummaryOptions) (*UsageResponse, error)` | `GET /api/v1/usage/summary` | [`UsageResponse`](usage_response.go) |
+
+## Webhook endpoints
+
+[`client.WebhookEndpoints()`](webhook_endpoints.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.WebhookEndpoints().ResendWebhookDelivery(ctx, deliveryID string) (*WebhookDelivery, error)` | `POST /api/v1/webhooks/deliveries/{delivery_id}/resend` | [`WebhookDelivery`](webhook_delivery.go) |
+
+### Webhook endpoints endpoints
+
+[`client.WebhookEndpoints().Endpoints()`](webhook_endpoints_endpoints.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.WebhookEndpoints().Endpoints().List(ctx) (*WebhookEndpointListResponse, error)` | `GET /api/v1/webhooks/endpoints` | [`WebhookEndpointListResponse`](webhook_endpoint_list_response.go) |
+| `client.WebhookEndpoints().Endpoints().Create(ctx, createWebhookEndpointRequest CreateWebhookEndpointRequest) (*CreatedWebhookEndpoint, error)` | `POST /api/v1/webhooks/endpoints` | [`CreatedWebhookEndpoint`](created_webhook_endpoint.go) |
+| `client.WebhookEndpoints().Endpoints().Retrieve(ctx, endpointID string) (*WebhookEndpoint, error)` | `GET /api/v1/webhooks/endpoints/{endpoint_id}` | [`WebhookEndpoint`](webhook_endpoint.go) |
+| `client.WebhookEndpoints().Endpoints().Delete(ctx, endpointID string) error` | `DELETE /api/v1/webhooks/endpoints/{endpoint_id}` | nothing |
+| `client.WebhookEndpoints().Endpoints().Update(ctx, endpointID string, updateWebhookEndpointRequest UpdateWebhookEndpointRequest) (*WebhookEndpoint, error)` | `PATCH /api/v1/webhooks/endpoints/{endpoint_id}` | [`WebhookEndpoint`](webhook_endpoint.go) |
+| `client.WebhookEndpoints().Endpoints().ListDeliveries(ctx, endpointID string, options *WebhookEndpointsEndpointsListDeliveriesOptions) (*WebhookEndpointsEndpointsListDeliveriesPage, error)` | `GET /api/v1/webhooks/endpoints/{endpoint_id}/deliveries` | [`WebhookDeliveryListResponse`](webhook_delivery_list_response.go) page of [`WebhookDelivery`](webhook_delivery.go) |
+| `client.WebhookEndpoints().Endpoints().ListDeliveriesAutoPaging(ctx, endpointID string, options *WebhookEndpointsEndpointsListDeliveriesOptions) *AutoPager[WebhookDelivery]` | `GET /api/v1/webhooks/endpoints/{endpoint_id}/deliveries` | every [`WebhookDelivery`](webhook_delivery.go) |
+| `client.WebhookEndpoints().Endpoints().RotateSecret(ctx, endpointID string) (*WebhookEndpointSecret, error)` | `POST /api/v1/webhooks/endpoints/{endpoint_id}/rotate-secret` | [`WebhookEndpointSecret`](webhook_endpoint_secret.go) |
+| `client.WebhookEndpoints().Endpoints().RetrieveSecret(ctx, endpointID string) (*WebhookEndpointSecret, error)` | `GET /api/v1/webhooks/endpoints/{endpoint_id}/secret` | [`WebhookEndpointSecret`](webhook_endpoint_secret.go) |

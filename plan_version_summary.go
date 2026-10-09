@@ -12,7 +12,7 @@ type PlanVersionSummary struct {
 	// RFC 3339 timestamp.
 	CreatedAt time.Time `json:"created_at"`
 
-	Currency string `json:"currency"`
+	Currency Currency `json:"currency"`
 
 	ID PlanVersionID `json:"id"`
 
