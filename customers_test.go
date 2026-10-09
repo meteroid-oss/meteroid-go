@@ -16,7 +16,7 @@ func TestCustomers_List(t *testing.T) {
 
 func TestCustomers_Create(t *testing.T) {
 	client, requests := mock(200, "application/json", `{"currency":"ERN","custom_properties":{"key":"value","count":3,"ratio":0.5,"flags":[true,false],"nested":{"ok":true}},"custom_taxes":[{"name":"sample","rate":"sample","tax_code":"sample"}],"id":"customer_id_1","invoicing_emails":["sample"],"invoicing_entity_id":"invoicing_entity_id_83","name":"sample","preferred_locales":["sample"]}`)
-	call(t, client.Customers().Create, decode[meteroid.CustomerCreateRequest](t, `{"currency":"ERN","custom_taxes":[{"name":"sample","rate":"sample","tax_code":"sample"}],"invoicing_emails":["sample"]}`))
+	call(t, client.Customers().Create, decode[meteroid.CustomerCreateRequest](t, `{"currency":"ERN"}`))
 	expect(t, requests, "POST /api/v1/customers")
 }
 

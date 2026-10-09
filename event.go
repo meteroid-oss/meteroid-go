@@ -2,7 +2,10 @@
 
 package meteroid
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
 // Event is the Event object of the Meteroid API.
 type Event struct {
@@ -20,7 +23,8 @@ type Event struct {
 
 	// RFC 3339 timestamp. Defaults to ingestion time if omitted.
 	// Must be between 24 hours ago and 1 hour from now. Set `allow_backfilling` to remove the past limit.
-	Timestamp string `json:"timestamp"`
+	// RFC 3339 timestamp.
+	Timestamp *time.Time `json:"timestamp,omitempty"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
@@ -33,7 +37,7 @@ func (v *Event) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	fields, err := objectFields(data, "Event", "code", "customer_id", "event_id", "timestamp")
+	fields, err := objectFields(data, "Event", "code", "customer_id", "event_id")
 	if err != nil {
 		return err
 	}

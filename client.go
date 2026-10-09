@@ -150,3 +150,8 @@ func (c *Client) Subscriptions() *Subscriptions {
 func (c *Client) Usage() *Usage {
 	return &Usage{client: c}
 }
+
+// WebhookEndpoints returns the webhook endpoints API.
+func (c *Client) WebhookEndpoints() *WebhookEndpoints {
+	return &WebhookEndpoints{client: c}
+}

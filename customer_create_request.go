@@ -24,7 +24,7 @@ type CustomerCreateRequest struct {
 	// tenant's `CUSTOMER` property definitions. Omit to leave unset.
 	CustomProperties json.RawMessage `json:"custom_properties,omitempty"`
 
-	CustomTaxes RequiredSlice[CustomTaxRate] `json:"custom_taxes"`
+	CustomTaxes []CustomTaxRate `json:"custom_taxes,omitempty"`
 
 	// `INDIVIDUAL` requires `first_name`, `last_name`, and a billing-address country.
 	CustomerType *CustomerType `json:"customer_type,omitempty"`
@@ -34,7 +34,7 @@ type CustomerCreateRequest struct {
 
 	FirstName *string `json:"first_name,omitempty"`
 
-	InvoicingEmails RequiredSlice[string] `json:"invoicing_emails"`
+	InvoicingEmails []string `json:"invoicing_emails,omitempty"`
 
 	InvoicingEntityID *InvoicingEntityID `json:"invoicing_entity_id,omitempty"`
 
@@ -76,7 +76,7 @@ func (v *CustomerCreateRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	fields, err := objectFields(data, "CustomerCreateRequest", "currency", "custom_taxes", "invoicing_emails")
+	fields, err := objectFields(data, "CustomerCreateRequest", "currency")
 	if err != nil {
 		return err
 	}
