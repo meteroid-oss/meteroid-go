@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.31.0](https://github.com/meteroid-oss/meteroid-go/compare/v0.30.1...v0.31.0) (2026-10-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** update SDKs to meteroid 0.1.0 ([#15](https://github.com/meteroid-oss/meteroid-go/issues/15))
+* **api:** `GET /api/v1/coupons`: added `#/components/schemas/CreditDiscount` to the `data/items/discount` response property `oneOf` list for the response status `200`
+* **api:** `GET /api/v1/coupons/{coupon_id}`: added `#/components/schemas/CreditDiscount` to the `discount` response property `oneOf` list for the response status `200`
+* **api:** `GET /api/v1/plans`: added `#/components/schemas/CreditPlanFee` to the `data/items/price_components/items/fee/oneOf[#/components/schemas/Fee]/` response property `oneOf` list for the response status `200`
+* **api:** `GET /api/v1/plans/{plan_id}`: added `#/components/schemas/CreditPlanFee` to the `price_components/items/fee/oneOf[#/components/schemas/Fee]/` response property `oneOf` list for the response status `200`
+* **api:** `GET /api/v1/products`: added `#/components/schemas/CreditFeeStructure` to the `data/items/fee_structure` response property `oneOf` list for the response status `200`
+* **api:** `GET /api/v1/products/{product_id}`: added `#/components/schemas/CreditFeeStructure` to the `fee_structure` response property `oneOf` list for the response status `200`
+* **api:** `GET /api/v1/subscriptions/{subscription_id}`: added `#/components/schemas/CreditDiscount` to the `applied_coupons/items/coupon/discount` response property `oneOf` list for the response status `200`
+* **api:** `GET /api/v1/subscriptions/{subscription_id}`: added `#/components/schemas/CreditFee` to the `add_ons/items/fee` response property `oneOf` list for the response status `200`
+* **api:** `GET /api/v1/subscriptions/{subscription_id}`: added `#/components/schemas/CreditFee` to the `components/items/fee` response property `oneOf` list for the response status `200`
+* **api:** `PATCH /api/v1/coupons/{coupon_id}`: added the new required request property `discount/oneOf[#/components/schemas/CouponDiscount]/oneOf[#/components/schemas/FixedDiscount]/type`
+* **api:** 90 more breaking changes
+
+### Features
+
+* **api:** `GET /api/v1/coupons/{coupon_id}`: added `#/components/schemas/CreditDiscount` to the `discount` response property `oneOf` list for the response status `200` ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** `GET /api/v1/coupons`: added `#/components/schemas/CreditDiscount` to the `data/items/discount` response property `oneOf` list for the response status `200` ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** `GET /api/v1/plans/{plan_id}`: added `#/components/schemas/CreditPlanFee` to the `price_components/items/fee/oneOf[#/components/schemas/Fee]/` response property `oneOf` list for the response status `200` ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** `GET /api/v1/plans`: added `#/components/schemas/CreditPlanFee` to the `data/items/price_components/items/fee/oneOf[#/components/schemas/Fee]/` response property `oneOf` list for the response status `200` ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** `GET /api/v1/products/{product_id}`: added `#/components/schemas/CreditFeeStructure` to the `fee_structure` response property `oneOf` list for the response status `200` ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** `GET /api/v1/products`: added `#/components/schemas/CreditFeeStructure` to the `data/items/fee_structure` response property `oneOf` list for the response status `200` ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** `GET /api/v1/subscriptions/{subscription_id}`: added `#/components/schemas/CreditDiscount` to the `applied_coupons/items/coupon/discount` response property `oneOf` list for the response status `200` ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** `GET /api/v1/subscriptions/{subscription_id}`: added `#/components/schemas/CreditFee` to the `add_ons/items/fee` response property `oneOf` list for the response status `200` ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** `GET /api/v1/subscriptions/{subscription_id}`: added `#/components/schemas/CreditFee` to the `components/items/fee` response property `oneOf` list for the response status `200` ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** `PATCH /api/v1/coupons/{coupon_id}`: added the new required request property `discount/oneOf[#/components/schemas/CouponDiscount]/oneOf[#/components/schemas/FixedDiscount]/type` ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** 90 more breaking changes ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** update SDKs to meteroid 0.1.0 ([#15](https://github.com/meteroid-oss/meteroid-go/issues/15)) ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+* **api:** update the API definitions ([eb2e9c6](https://github.com/meteroid-oss/meteroid-go/commit/eb2e9c6e2f72cb3e4b4220dc53ee695f9a19f905))
+
 ## [0.30.1](https://github.com/meteroid-oss/meteroid-go/compare/v0.30.0...v0.30.1) (2026-10-16)
 
 
