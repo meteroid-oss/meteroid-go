@@ -61,9 +61,19 @@ func (c *Client) BatchJobs() *BatchJobs {
 	return &BatchJobs{client: c}
 }
 
+// Budgets returns the budgets API.
+func (c *Client) Budgets() *Budgets {
+	return &Budgets{client: c}
+}
+
 // CheckoutSessions returns the checkout sessions API.
 func (c *Client) CheckoutSessions() *CheckoutSessions {
 	return &CheckoutSessions{client: c}
+}
+
+// Checks returns the checks API.
+func (c *Client) Checks() *Checks {
+	return &Checks{client: c}
 }
 
 // Connect returns the connect API.
@@ -79,6 +89,16 @@ func (c *Client) Coupons() *Coupons {
 // CreditNotes returns the credit notes API.
 func (c *Client) CreditNotes() *CreditNotes {
 	return &CreditNotes{client: c}
+}
+
+// CreditUnits returns the credit units API.
+func (c *Client) CreditUnits() *CreditUnits {
+	return &CreditUnits{client: c}
+}
+
+// Credits returns the credits API.
+func (c *Client) Credits() *Credits {
+	return &Credits{client: c}
 }
 
 // CustomProperties returns the custom properties API.
@@ -149,6 +169,11 @@ func (c *Client) Subscriptions() *Subscriptions {
 // Usage returns the usage API.
 func (c *Client) Usage() *Usage {
 	return &Usage{client: c}
+}
+
+// UsageCosts returns the usage costs API.
+func (c *Client) UsageCosts() *UsageCosts {
+	return &UsageCosts{client: c}
 }
 
 // WebhookEndpoints returns the webhook endpoints API.

@@ -9,6 +9,8 @@ import (
 
 // CreateCouponRequest is the CreateCouponRequest object of the Meteroid API.
 type CreateCouponRequest struct {
+	// 1 to 64 ASCII letters, digits, hyphens or underscores. A promotional-credit (`CREDIT`) code
+	// is stored upper-case. Codes are matched as described on `Coupon.code`.
 	Code string `json:"code"`
 
 	Description *string `json:"description,omitempty"`
@@ -24,6 +26,8 @@ type CreateCouponRequest struct {
 
 	RedemptionLimit *int32 `json:"redemption_limit,omitempty"`
 
+	// Whether one customer may redeem the coupon more than once. Must be false for a
+	// promotional-credit (`CREDIT`) coupon.
 	Reusable *bool `json:"reusable,omitempty"`
 
 	// ExtraFields holds the properties this SDK version does not know, as

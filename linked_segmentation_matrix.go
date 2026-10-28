@@ -10,6 +10,9 @@ type LinkedSegmentationMatrix struct {
 
 	Dimension2Key string `json:"dimension2_key"`
 
+	// Encodes as "LINKED" when left empty.
+	Type string `json:"type"`
+
 	Values RequiredMap[[]string] `json:"values"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -27,12 +30,15 @@ func (v *LinkedSegmentationMatrix) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "dimension1_key", "dimension2_key", "values")
+	v.ExtraFields = extraFields(fields, "dimension1_key", "dimension2_key", "type", "values")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v LinkedSegmentationMatrix) MarshalJSON() ([]byte, error) {
 	type plain LinkedSegmentationMatrix
+	if v.Type == "" {
+		v.Type = "LINKED"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

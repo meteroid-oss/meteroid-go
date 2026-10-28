@@ -8,6 +8,9 @@ import "encoding/json"
 type ExtraRecurringPricing struct {
 	Quantity int32 `json:"quantity"`
 
+	// Encodes as "EXTRA_RECURRING" when left empty.
+	Type string `json:"type"`
+
 	UnitPrice string `json:"unit_price"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -25,12 +28,15 @@ func (v *ExtraRecurringPricing) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "quantity", "unit_price")
+	v.ExtraFields = extraFields(fields, "quantity", "type", "unit_price")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v ExtraRecurringPricing) MarshalJSON() ([]byte, error) {
 	type plain ExtraRecurringPricing
+	if v.Type == "" {
+		v.Type = "EXTRA_RECURRING"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

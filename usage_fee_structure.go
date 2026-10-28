@@ -10,6 +10,9 @@ type UsageFeeStructure struct {
 
 	Model UsageModelEnum `json:"model"`
 
+	// Encodes as "USAGE" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -25,12 +28,15 @@ func (v *UsageFeeStructure) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "metric_id", "model")
+	v.ExtraFields = extraFields(fields, "metric_id", "model", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v UsageFeeStructure) MarshalJSON() ([]byte, error) {
 	type plain UsageFeeStructure
+	if v.Type == "" {
+		v.Type = "USAGE"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

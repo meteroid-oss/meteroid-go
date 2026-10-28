@@ -29,6 +29,8 @@ type Fee struct {
 	ExtraRecurring *ExtraRecurringPlanFee `json:"-"`
 	// OneTime is set when Type is FeeOneTime.
 	OneTime *OneTimePlanFee `json:"-"`
+	// Credit is set when Type is FeeCredit.
+	Credit *CreditPlanFee `json:"-"`
 
 	// raw keeps the payload of a variant this SDK version does not know about, so
 	// that decoding and re-encoding an unknown variant preserves every field and
@@ -49,6 +51,7 @@ const (
 	FeeUsage          FeeType = "USAGE"
 	FeeExtraRecurring FeeType = "EXTRA_RECURRING"
 	FeeOneTime        FeeType = "ONE_TIME"
+	FeeCredit         FeeType = "CREDIT"
 )
 
 // NewFeeRate builds a Fee holding the RATE variant.
@@ -81,13 +84,18 @@ func NewFeeOneTime(value OneTimePlanFee) Fee {
 	return Fee{Type: FeeOneTime, OneTime: &value}
 }
 
+// NewFeeCredit builds a Fee holding the CREDIT variant.
+func NewFeeCredit(value CreditPlanFee) Fee {
+	return Fee{Type: FeeCredit, Credit: &value}
+}
+
 // IsKnown reports whether Type is one of the variants this SDK version
 // knows about, i.e. one of the Fee* constants. It is false for a
 // variant added to the API later, whose payload is then only available from
 // [Fee.Raw].
 func (u Fee) IsKnown() bool {
 	switch u.Type {
-	case FeeRate, FeeSlot, FeeCapacity, FeeUsage, FeeExtraRecurring, FeeOneTime:
+	case FeeRate, FeeSlot, FeeCapacity, FeeUsage, FeeExtraRecurring, FeeOneTime, FeeCredit:
 		return true
 	}
 	return false
@@ -136,6 +144,11 @@ func (u Fee) MarshalJSON() ([]byte, error) {
 			return nil, &UnionError{Union: "Fee", Discriminator: string(u.Type), Reason: "variant payload is nil"}
 		}
 		return marshalUnionVariant("type", string(u.Type), u.OneTime)
+	case FeeCredit:
+		if u.Credit == nil {
+			return nil, &UnionError{Union: "Fee", Discriminator: string(u.Type), Reason: "variant payload is nil"}
+		}
+		return marshalUnionVariant("type", string(u.Type), u.Credit)
 	}
 
 	if len(u.raw) > 0 {
@@ -181,6 +194,9 @@ func (u *Fee) UnmarshalJSON(data []byte) error {
 	case FeeOneTime:
 		u.OneTime = new(OneTimePlanFee)
 		return json.Unmarshal(data, u.OneTime)
+	case FeeCredit:
+		u.Credit = new(CreditPlanFee)
+		return json.Unmarshal(data, u.Credit)
 	default:
 		u.raw = append(json.RawMessage(nil), data...)
 		return nil

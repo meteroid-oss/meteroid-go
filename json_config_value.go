@@ -8,6 +8,9 @@ import "encoding/json"
 //
 // A structured (JSON) config value — the "metadata" case, several fields in one entitlement.
 type JSONConfigValue struct {
+	// Encodes as "JSON" when left empty.
+	Kind string `json:"kind"`
+
 	Value json.RawMessage `json:"value"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -25,12 +28,15 @@ func (v *JSONConfigValue) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "value")
+	v.ExtraFields = extraFields(fields, "kind", "value")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v JSONConfigValue) MarshalJSON() ([]byte, error) {
 	type plain JSONConfigValue
+	if v.Kind == "" {
+		v.Kind = "JSON"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

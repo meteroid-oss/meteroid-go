@@ -28,6 +28,10 @@ type InvoiceEventData struct {
 
 	ParentInvoiceID *InvoiceID `json:"parent_invoice_id,omitempty"`
 
+	// On `invoice.paid`: true when finalized credit notes, not a payment, settled the invoice's
+	// whole total. Nothing was collected, so it books no cash. False on every other event.
+	SettledByCreditNotes bool `json:"settled_by_credit_notes"`
+
 	Status InvoiceStatus `json:"status"`
 
 	TaxAmount int64 `json:"tax_amount"`
@@ -45,11 +49,11 @@ func (v *InvoiceEventData) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	fields, err := objectFields(data, "InvoiceEventData", "created_at", "currency", "customer_id", "invoice_id", "status", "tax_amount", "total")
+	fields, err := objectFields(data, "InvoiceEventData", "created_at", "currency", "customer_id", "invoice_id", "settled_by_credit_notes", "status", "tax_amount", "total")
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "consolidated_into_invoice_id", "created_at", "currency", "custom_properties", "customer_id", "invoice_id", "invoice_number", "parent_invoice_id", "status", "tax_amount", "total")
+	v.ExtraFields = extraFields(fields, "consolidated_into_invoice_id", "created_at", "currency", "custom_properties", "customer_id", "invoice_id", "invoice_number", "parent_invoice_id", "settled_by_credit_notes", "status", "tax_amount", "total")
 	return nil
 }
 

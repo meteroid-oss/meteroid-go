@@ -20,6 +20,10 @@ type SubscriptionCreateRequest struct {
 
 	ChargeAutomatically *bool `json:"charge_automatically,omitempty"`
 
+	// Codes of the coupons to apply. A code matches whatever the case of its ASCII letters; when
+	// several coupons differ from it only in that case, the one with exactly that code applies. A
+	// code that names no live coupon, or several differing only in case, refuses the request with
+	// 400 listing the codes (unknown codes used to be ignored silently).
 	CouponCodes []string `json:"coupon_codes,omitempty"`
 
 	// User-defined custom property values, keyed by definition `key`. Validated against the
@@ -51,6 +55,10 @@ type SubscriptionCreateRequest struct {
 
 	TrialDays *int32 `json:"trial_days,omitempty"`
 
+	// Bill only the customer's events whose property has this value. Omit to bill the events
+	// no usage filter of the customer's other subscriptions matches.
+	UsageFilter *UsageFilter `json:"usage_filter,omitempty"`
+
 	Version *int32 `json:"version,omitempty"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -68,7 +76,7 @@ func (v *SubscriptionCreateRequest) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "activation_condition", "add_ons", "auto_advance_invoices", "backdate_invoices", "billing_day_anchor", "charge_automatically", "coupon_codes", "custom_properties", "customer_id_or_alias", "end_date", "invoice_memo", "net_terms", "payment_methods_config", "plan_id", "price_components", "purchase_order", "skip_past_invoices", "start_date", "trial_days", "version")
+	v.ExtraFields = extraFields(fields, "activation_condition", "add_ons", "auto_advance_invoices", "backdate_invoices", "billing_day_anchor", "charge_automatically", "coupon_codes", "custom_properties", "customer_id_or_alias", "end_date", "invoice_memo", "net_terms", "payment_methods_config", "plan_id", "price_components", "purchase_order", "skip_past_invoices", "start_date", "trial_days", "usage_filter", "version")
 	return nil
 }
 

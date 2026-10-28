@@ -11,6 +11,9 @@ type ConfigFeatureType struct {
 	// Allowed values when `value_type = SELECT`. Empty otherwise.
 	Options []string `json:"options,omitempty"`
 
+	// Encodes as "CONFIG" when left empty.
+	Type string `json:"type"`
+
 	// The feature's value type, fixed at creation.
 	ValueType ConfigValueType `json:"value_type"`
 
@@ -29,12 +32,15 @@ func (v *ConfigFeatureType) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "options", "value_type")
+	v.ExtraFields = extraFields(fields, "options", "type", "value_type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v ConfigFeatureType) MarshalJSON() ([]byte, error) {
 	type plain ConfigFeatureType
+	if v.Type == "" {
+		v.Type = "CONFIG"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

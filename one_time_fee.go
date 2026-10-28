@@ -10,6 +10,9 @@ type OneTimeFee struct {
 
 	Rate string `json:"rate"`
 
+	// Encodes as "ONE_TIME" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -25,12 +28,15 @@ func (v *OneTimeFee) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "quantity", "rate")
+	v.ExtraFields = extraFields(fields, "quantity", "rate", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v OneTimeFee) MarshalJSON() ([]byte, error) {
 	type plain OneTimeFee
+	if v.Type == "" {
+		v.Type = "ONE_TIME"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

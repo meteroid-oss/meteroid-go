@@ -17,6 +17,14 @@ type UpdateMetricRequest struct {
 
 	UnitConversion *Nullable[UnitConversion] `json:"unit_conversion,omitempty"`
 
+	// What several units of the metric are called, e.g. `tokens`. See `unit_singular`.
+	UnitPlural *Nullable[string] `json:"unit_plural,omitempty"`
+
+	// What one unit of the metric is called, e.g. `token`. Send `unit_singular` and
+	// `unit_plural` together; omit both to leave the label unchanged, or send both as empty
+	// strings to remove it. Trimmed; at most 32 characters.
+	UnitSingular *Nullable[string] `json:"unit_singular,omitempty"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -32,7 +40,7 @@ func (v *UpdateMetricRequest) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "description", "filters", "name", "segmentation_matrix", "unit_conversion")
+	v.ExtraFields = extraFields(fields, "description", "filters", "name", "segmentation_matrix", "unit_conversion", "unit_plural", "unit_singular")
 	return nil
 }
 

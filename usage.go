@@ -7,12 +7,6 @@ import (
 	"net/http"
 )
 
-// UsageRetrieveCustomerOptions carries the optional query and header parameters of
-// [Usage.RetrieveCustomer]. Leave a field nil to omit it.
-type UsageRetrieveCustomerOptions struct {
-	MetricID *BillableMetricID
-}
-
 // UsageRetrieveSubscriptionOptions carries the optional query and header parameters of
 // [Usage.RetrieveSubscription]. Leave a field nil to omit it.
 type UsageRetrieveSubscriptionOptions struct {
@@ -34,30 +28,9 @@ type Usage struct {
 	client *Client
 }
 
-// RetrieveCustomer sends GET /api/v1/usage/customer/{customer_id}.
-//
-// # Get customer usage
-//
-// Retrieve aggregated usage data for a customer over a specified period.
-func (a *Usage) RetrieveCustomer(ctx context.Context, customerID string, startDate Date, endDate Date, options *UsageRetrieveCustomerOptions, opts ...RequestOption) (*UsageResponse, error) {
-	req := newRequest(http.MethodGet, "/api/v1/usage/customer/{customer_id}", opts)
-	req.SetPathParam("customer_id", customerID)
-	req.errors = errorSchemas{
-		"401": errorSchema[RestErrorResponse],
-		"404": errorSchema[RestErrorResponse],
-		"429": errorSchema[RestErrorResponse],
-		"500": errorSchema[RestErrorResponse],
-	}
-	req.SetQueryParam("start_date", startDate.String())
-	req.SetQueryParam("end_date", endDate.String())
-	if options != nil && options.MetricID != nil {
-		req.SetQueryParam("metric_id", formatValue(*options.MetricID))
-	}
-	var out UsageResponse
-	if err := a.client.execute(ctx, req, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
+// Customer returns the customer API.
+func (a *Usage) Customer() *UsageCustomer {
+	return &UsageCustomer{client: a.client}
 }
 
 // RetrieveSubscription sends GET /api/v1/usage/subscription/{subscription_id}.
@@ -65,7 +38,10 @@ func (a *Usage) RetrieveCustomer(ctx context.Context, customerID string, startDa
 // # Get subscription usage
 //
 // Retrieve aggregated usage data for a subscription's usage-based components.
-// If start_date/end_date are omitted, defaults to the current billing period.
+// If start_date/end_date are omitted, defaults to the current billing period, and the response
+// then carries the running total (beta): what each metric's usage adds so far to the next invoice,
+// and what they add up to, before discounts and credits. That reading is shared for up to 30
+// seconds (see `computed_at`). Counts towards the usage cost reads' rate limit.
 func (a *Usage) RetrieveSubscription(ctx context.Context, subscriptionID string, options *UsageRetrieveSubscriptionOptions, opts ...RequestOption) (*UsageResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/usage/subscription/{subscription_id}", opts)
 	req.SetPathParam("subscription_id", subscriptionID)

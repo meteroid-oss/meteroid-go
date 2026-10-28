@@ -7,7 +7,7 @@ import (
 )
 
 func TestUsage_RetrieveSubscription(t *testing.T) {
-	client, requests := mock(200, "application/json", `{"period_end":"1999-12-31","period_start":"2024-02-29","usage":[{"grouped_usage":[{"dimensions":{"alpha":"sample"},"value":"12345.6789"}],"metric_code":"sample","metric_id":"billable_metric_id_44","metric_name":"sample","total_value":"12345.6789"}]}`)
+	client, requests := mock(200, "application/json", `{"period_end":"2024-02-29","period_start":"1999-12-31","usage":[{"grouped_usage":[{"dimensions":{"alpha":"sample"},"value":"-0.000123"}],"metric_code":"sample","metric_id":"billable_metric_id_52","metric_name":"sample","total_value":"12345.6789"}]}`)
 	call(t, client.Usage().RetrieveSubscription, "subscription_id", nil)
 	expect(t, requests, "GET /api/v1/usage/subscription/subscription_id")
 }

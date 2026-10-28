@@ -8,6 +8,9 @@ import "encoding/json"
 type OnlinePaymentMethodConfig struct {
 	Config *OnlineMethodsConfig `json:"config,omitempty"`
 
+	// Encodes as "online" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -23,12 +26,15 @@ func (v *OnlinePaymentMethodConfig) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "config")
+	v.ExtraFields = extraFields(fields, "config", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v OnlinePaymentMethodConfig) MarshalJSON() ([]byte, error) {
 	type plain OnlinePaymentMethodConfig
+	if v.Type == "" {
+		v.Type = "online"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

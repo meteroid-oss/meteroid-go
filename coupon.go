@@ -12,6 +12,10 @@ type Coupon struct {
 	// RFC 3339 timestamp.
 	ArchivedAt *time.Time `json:"archived_at,omitempty"`
 
+	// A promotional-credit (`CREDIT`) code is stored upper-case; other codes as written. A code
+	// is redeemed by the coupon with exactly that code, else by the only live coupon equal to it
+	// ignoring the case of ASCII letters; several such coupons and no exact match make it
+	// ambiguous.
 	Code string `json:"code"`
 
 	// RFC 3339 timestamp.

@@ -11,6 +11,10 @@ import (
 type MeteredEntitlementUsage struct {
 	Consumed *string `json:"consumed,omitempty"`
 
+	// Switched on, but refused: the `BLOCK` limit (plus its grace) is reached, so `enabled` is
+	// false until the window resets. Never set for a limit grouped by a property.
+	LimitReached *bool `json:"limit_reached,omitempty"`
+
 	Remaining *string `json:"remaining,omitempty"`
 
 	// RFC 3339 timestamp.
@@ -31,7 +35,7 @@ func (v *MeteredEntitlementUsage) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "consumed", "remaining", "reset_at")
+	v.ExtraFields = extraFields(fields, "consumed", "limit_reached", "remaining", "reset_at")
 	return nil
 }
 

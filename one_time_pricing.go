@@ -8,6 +8,9 @@ import "encoding/json"
 type OneTimePricing struct {
 	Quantity int32 `json:"quantity"`
 
+	// Encodes as "ONE_TIME" when left empty.
+	Type string `json:"type"`
+
 	UnitPrice string `json:"unit_price"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -25,12 +28,15 @@ func (v *OneTimePricing) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "quantity", "unit_price")
+	v.ExtraFields = extraFields(fields, "quantity", "type", "unit_price")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v OneTimePricing) MarshalJSON() ([]byte, error) {
 	type plain OneTimePricing
+	if v.Type == "" {
+		v.Type = "ONE_TIME"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

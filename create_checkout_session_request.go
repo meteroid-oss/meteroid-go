@@ -23,6 +23,10 @@ type CreateCheckoutSessionRequest struct {
 
 	Components *CreateSubscriptionComponents `json:"components,omitempty"`
 
+	// Code of the coupon to apply, used only when `coupon_ids` is empty. It names the coupon with
+	// exactly that code, else the only live coupon equal to it ignoring the case of ASCII
+	// letters. An unknown or ambiguous code is refused with 400. If the code no longer names a
+	// usable coupon when the customer pays, the payment is refused and nothing is charged.
 	CouponCode *string `json:"coupon_code,omitempty"`
 
 	CouponIDs []CouponID `json:"coupon_ids,omitempty"`

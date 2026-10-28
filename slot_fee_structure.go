@@ -10,6 +10,9 @@ type SlotFeeStructure struct {
 
 	SlotUnitName string `json:"slot_unit_name"`
 
+	// Encodes as "SLOT" when left empty.
+	Type string `json:"type"`
+
 	UpgradePolicy SlotUpgradePolicyEnum `json:"upgrade_policy"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -27,12 +30,15 @@ func (v *SlotFeeStructure) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "downgrade_policy", "slot_unit_name", "upgrade_policy")
+	v.ExtraFields = extraFields(fields, "downgrade_policy", "slot_unit_name", "type", "upgrade_policy")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v SlotFeeStructure) MarshalJSON() ([]byte, error) {
 	type plain SlotFeeStructure
+	if v.Type == "" {
+		v.Type = "SLOT"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

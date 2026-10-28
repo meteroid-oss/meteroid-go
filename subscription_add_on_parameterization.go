@@ -12,6 +12,9 @@ type SubscriptionAddOnParameterization struct {
 
 	InitialSlotCount *int32 `json:"initial_slot_count,omitempty"`
 
+	// Encodes as "PARAMETERIZATION" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -27,12 +30,15 @@ func (v *SubscriptionAddOnParameterization) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "billing_period", "committed_capacity", "initial_slot_count")
+	v.ExtraFields = extraFields(fields, "billing_period", "committed_capacity", "initial_slot_count", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v SubscriptionAddOnParameterization) MarshalJSON() ([]byte, error) {
 	type plain SubscriptionAddOnParameterization
+	if v.Type == "" {
+		v.Type = "PARAMETERIZATION"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

@@ -6,6 +6,9 @@ import "encoding/json"
 
 // BooleanFeatureType is the BooleanFeatureType object of the Meteroid API.
 type BooleanFeatureType struct {
+	// Encodes as "BOOLEAN" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -21,12 +24,15 @@ func (v *BooleanFeatureType) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields)
+	v.ExtraFields = extraFields(fields, "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v BooleanFeatureType) MarshalJSON() ([]byte, error) {
 	type plain BooleanFeatureType
+	if v.Type == "" {
+		v.Type = "BOOLEAN"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

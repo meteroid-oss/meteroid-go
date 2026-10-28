@@ -9,25 +9,25 @@ import (
 )
 
 func TestProducts_List(t *testing.T) {
-	client, requests := mock(200, "application/json", `{"data":[{"catalog":false,"created_at":"2024-03-15T10:30:45.123+02:00","fee_structure":{"type":"RATE"},"fee_type":"CAPACITY","id":"product_id_78","name":"sample","product_family_id":"product_family_id_47"}],"pagination_meta":{"page":-123456789,"per_page":-123456789,"total_items":-9007199254740993,"total_pages":123456789}}`)
+	client, requests := mock(200, "application/json", `{"data":[{"catalog":false,"created_at":"2024-03-15T10:30:45.123+02:00","fee_structure":{"type":"RATE"},"fee_type":"USAGE","id":"product_id_78","name":"sample","product_family_id":"product_family_id_47"}],"pagination_meta":{"page":-123456789,"per_page":-123456789,"total_items":-9007199254740993,"total_pages":123456789}}`)
 	call(t, client.Products().List, nil)
 	expect(t, requests, "GET /api/v1/products")
 }
 
 func TestProducts_Create(t *testing.T) {
-	client, requests := mock(200, "application/json", `{"catalog":true,"created_at":"2023-12-31T23:59:59.999-05:30","fee_structure":{"type":"RATE"},"fee_type":"RATE","id":"product_id_13","name":"sample","product_family_id":"product_family_id_99"}`)
+	client, requests := mock(200, "application/json", `{"catalog":true,"created_at":"2023-12-31T23:59:59.999-05:30","fee_structure":{"type":"RATE"},"fee_type":"CAPACITY","id":"product_id_13","name":"sample","product_family_id":"product_family_id_99"}`)
 	call(t, client.Products().Create, decode[meteroid.CreateProductRequest](t, `{"fee_structure":{"type":"RATE"},"name":"sample","product_family_id":"product_family_id_47"}`))
 	expect(t, requests, "POST /api/v1/products")
 }
 
 func TestProducts_Retrieve(t *testing.T) {
-	client, requests := mock(200, "application/json", `{"catalog":true,"created_at":"2023-12-31T23:59:59.999-05:30","fee_structure":{"type":"RATE"},"fee_type":"RATE","id":"product_id_13","name":"sample","product_family_id":"product_family_id_99"}`)
+	client, requests := mock(200, "application/json", `{"catalog":true,"created_at":"2023-12-31T23:59:59.999-05:30","fee_structure":{"type":"RATE"},"fee_type":"CAPACITY","id":"product_id_13","name":"sample","product_family_id":"product_family_id_99"}`)
 	call(t, client.Products().Retrieve, "product_id")
 	expect(t, requests, "GET /api/v1/products/product_id")
 }
 
 func TestProducts_Update(t *testing.T) {
-	client, requests := mock(200, "application/json", `{"catalog":true,"created_at":"2023-12-31T23:59:59.999-05:30","fee_structure":{"type":"RATE"},"fee_type":"RATE","id":"product_id_13","name":"sample","product_family_id":"product_family_id_99"}`)
+	client, requests := mock(200, "application/json", `{"catalog":true,"created_at":"2023-12-31T23:59:59.999-05:30","fee_structure":{"type":"RATE"},"fee_type":"CAPACITY","id":"product_id_13","name":"sample","product_family_id":"product_family_id_99"}`)
 	call(t, client.Products().Update, "product_id", decode[meteroid.UpdateProductRequest](t, `{}`))
 	expect(t, requests, "PATCH /api/v1/products/product_id")
 }

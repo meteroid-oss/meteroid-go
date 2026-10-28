@@ -6,7 +6,7 @@ resource. Each method also takes trailing `...RequestOption`s, such as `WithMaxR
 `WithTimeout`, `WithHeader` or `WithResponseInto`, for that call. Models and option structs are
 in the `meteroid` package.
 
-[Add ons](#add-ons) · [Add ons entitlements](#add-ons-entitlements) · [Batch jobs](#batch-jobs) · [Checkout sessions](#checkout-sessions) · [Connect](#connect) · [Coupons](#coupons) · [Credit notes](#credit-notes) · [Custom properties](#custom-properties) · [Customers](#customers) · [Entitlements](#entitlements) · [Events](#events) · [Features](#features) · [Invoices](#invoices) · [Metrics](#metrics) · [Oauth](#oauth) · [Oauth apps](#oauth-apps) · [Plans](#plans) · [Plans versions](#plans-versions) · [Product families](#product-families) · [Products](#products) · [Products entitlements](#products-entitlements) · [Subscriptions](#subscriptions) · [Usage](#usage) · [Webhook endpoints](#webhook-endpoints) · [Webhook endpoints endpoints](#webhook-endpoints-endpoints)
+[Add ons](#add-ons) · [Add ons entitlements](#add-ons-entitlements) · [Batch jobs](#batch-jobs) · [Budgets](#budgets) · [Checkout sessions](#checkout-sessions) · [Checks](#checks) · [Connect](#connect) · [Coupons](#coupons) · [Credit notes](#credit-notes) · [Credit units](#credit-units) · [Credit units prices](#credit-units-prices) · [Credits](#credits) · [Credits grants](#credits-grants) · [Credits wallets](#credits-wallets) · [Custom properties](#custom-properties) · [Customers](#customers) · [Entitlements](#entitlements) · [Events](#events) · [Features](#features) · [Invoices](#invoices) · [Metrics](#metrics) · [Oauth](#oauth) · [Oauth apps](#oauth-apps) · [Plans](#plans) · [Plans versions](#plans-versions) · [Product families](#product-families) · [Products](#products) · [Products entitlements](#products-entitlements) · [Subscriptions](#subscriptions) · [Usage](#usage) · [Usage customer](#usage-customer) · [Usage costs](#usage-costs) · [Usage costs customer](#usage-costs-customer) · [Usage costs subscription](#usage-costs-subscription) · [Webhook endpoints](#webhook-endpoints) · [Webhook endpoints endpoints](#webhook-endpoints-endpoints)
 
 ## Add ons
 
@@ -43,6 +43,18 @@ in the `meteroid` package.
 | `client.BatchJobs().ListFailures(ctx, batchJobID string, options *BatchJobsListFailuresOptions) (*BatchJobsListFailuresPage, error)` | `GET /api/v1/batch-jobs/{batch_job_id}/failures` | [`BatchJobFailuresResponse`](batch_job_failures_response.go) page of [`BatchJobItemFailureResponse`](batch_job_item_failure_response.go) |
 | `client.BatchJobs().ListFailuresAutoPaging(ctx, batchJobID string, options *BatchJobsListFailuresOptions) *AutoPager[BatchJobItemFailureResponse]` | `GET /api/v1/batch-jobs/{batch_job_id}/failures` | every [`BatchJobItemFailureResponse`](batch_job_item_failure_response.go) |
 
+## Budgets
+
+[`client.Budgets()`](budgets.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.Budgets().List(ctx, idOrAlias string, options *BudgetsListOptions) (*BudgetsListPage, error)` | `GET /api/v1/customers/{id_or_alias}/budgets` | [`BudgetListResponse`](budget_list_response.go) page of [`Budget`](budget.go) |
+| `client.Budgets().ListAutoPaging(ctx, idOrAlias string, options *BudgetsListOptions) *AutoPager[Budget]` | `GET /api/v1/customers/{id_or_alias}/budgets` | every [`Budget`](budget.go) |
+| `client.Budgets().Create(ctx, idOrAlias string, idempotencyKey string, createBudgetRequest CreateBudgetRequest) (*Budget, error)` | `POST /api/v1/customers/{id_or_alias}/budgets` | [`Budget`](budget.go) |
+| `client.Budgets().Update(ctx, idOrAlias string, budgetID string, idempotencyKey string, patchBudgetRequest PatchBudgetRequest) (*Budget, error)` | `PATCH /api/v1/customers/{id_or_alias}/budgets/{budget_id}` | [`Budget`](budget.go) |
+| `client.Budgets().Archive(ctx, idOrAlias string, budgetID string, idempotencyKey string) (*Budget, error)` | `POST /api/v1/customers/{id_or_alias}/budgets/{budget_id}/archive` | [`Budget`](budget.go) |
+
 ## Checkout sessions
 
 [`client.CheckoutSessions()`](checkout_sessions.go)
@@ -54,6 +66,14 @@ in the `meteroid` package.
 | `client.CheckoutSessions().Retrieve(ctx, id string) (*GetCheckoutSessionResponse, error)` | `GET /api/v1/checkout-sessions/{id}` | [`GetCheckoutSessionResponse`](get_checkout_session_response.go) |
 | `client.CheckoutSessions().Cancel(ctx, id string) (*CancelCheckoutSessionResponse, error)` | `POST /api/v1/checkout-sessions/{id}/cancel` | [`CancelCheckoutSessionResponse`](cancel_checkout_session_response.go) |
 
+## Checks
+
+[`client.Checks()`](checks.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.Checks().CheckEntitlement(ctx, idOrAlias string, featureIDOrCode string, options *ChecksCheckEntitlementOptions) (*EntitlementCheck, error)` | `GET /api/v1/customers/{id_or_alias}/entitlements/{feature_id_or_code}/check` | [`EntitlementCheck`](entitlement_check.go) |
+
 ## Connect
 
 [`client.Connect()`](connect.go)
@@ -61,7 +81,7 @@ in the `meteroid` package.
 | Method | Request | Returns |
 | --- | --- | --- |
 | `client.Connect().ListConnectedAccounts(ctx) (*ConnectedAccountsResponse, error)` | `GET /api/v1/connected-accounts` | [`ConnectedAccountsResponse`](connected_accounts_response.go) |
-| `client.Connect().CreateConnectedAccount(ctx, createConnectedAccountRequest CreateConnectedAccountRequest) (*ConnectedAccount, error)` | `POST /api/v1/connected-accounts` | [`ConnectedAccount`](connected_account.go) |
+| `client.Connect().CreateConnectedAccount(ctx, createConnectedAccountRequest CreateConnectedAccountRequest) (*CreateConnectedAccountResponse, error)` | `POST /api/v1/connected-accounts` | [`CreateConnectedAccountResponse`](create_connected_account_response.go) |
 | `client.Connect().RetrieveConnectedAccount(ctx, id string) (*ConnectedAccount, error)` | `GET /api/v1/connected-accounts/{id}` | [`ConnectedAccount`](connected_account.go) |
 | `client.Connect().DisconnectAccount(ctx, id string) error` | `DELETE /api/v1/connected-accounts/{id}` | nothing |
 | `client.Connect().CreateOnboardingLink(ctx, id string, createOnboardingLinkRequest CreateOnboardingLinkRequest) (*OnboardingLinkResponse, error)` | `POST /api/v1/connected-accounts/{id}/onboarding` | [`OnboardingLinkResponse`](onboarding_link_response.go) |
@@ -94,6 +114,57 @@ in the `meteroid` package.
 | `client.CreditNotes().UpdateCustomProperties(ctx, creditNoteID string, creditNoteCustomPropertiesRequest CreditNoteCustomPropertiesRequest) (*CreditNote, error)` | `PATCH /api/v1/credit-notes/{credit_note_id}/custom-properties` | [`CreditNote`](credit_note.go) |
 | `client.CreditNotes().Download(ctx, creditNoteID string) ([]byte, error)` | `GET /api/v1/credit-notes/{credit_note_id}/download` | bytes |
 | `client.CreditNotes().DownloadXML(ctx, creditNoteID string) ([]byte, error)` | `GET /api/v1/credit-notes/{credit_note_id}/xml` | bytes |
+
+## Credit units
+
+[`client.CreditUnits()`](credit_units.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.CreditUnits().List(ctx, options *CreditUnitsListOptions) (*CreditUnitListResponse, error)` | `GET /api/v1/credit-units` | [`CreditUnitListResponse`](credit_unit_list_response.go) |
+| `client.CreditUnits().Create(ctx, creditUnitCreateRequest CreditUnitCreateRequest) (*CreditUnit, error)` | `POST /api/v1/credit-units` | [`CreditUnit`](credit_unit.go) |
+| `client.CreditUnits().Retrieve(ctx, id string) (*CreditUnit, error)` | `GET /api/v1/credit-units/{id}` | [`CreditUnit`](credit_unit.go) |
+| `client.CreditUnits().Update(ctx, id string, creditUnitUpdateRequest CreditUnitUpdateRequest) (*CreditUnit, error)` | `PATCH /api/v1/credit-units/{id}` | [`CreditUnit`](credit_unit.go) |
+
+### Credit units prices
+
+[`client.CreditUnits().Prices()`](credit_units_prices.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.CreditUnits().Prices().List(ctx, id string, options *CreditUnitsPricesListOptions) (*CreditUnitPriceListResponse, error)` | `GET /api/v1/credit-units/{id}/prices` | [`CreditUnitPriceListResponse`](credit_unit_price_list_response.go) |
+| `client.CreditUnits().Prices().Update(ctx, id string, currency string, creditUnitPriceSetRequest CreditUnitPriceSetRequest) (*CreditUnitPrice, error)` | `PUT /api/v1/credit-units/{id}/prices/{currency}` | [`CreditUnitPrice`](credit_unit_price.go) |
+| `client.CreditUnits().Prices().Archive(ctx, id string, currency string) (*CreditUnitPrice, error)` | `DELETE /api/v1/credit-units/{id}/prices/{currency}` | [`CreditUnitPrice`](credit_unit_price.go) |
+
+## Credits
+
+[`client.Credits()`](credits.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.Credits().ListCustomerCreditLedger(ctx, idOrAlias string, options *CreditsListCustomerCreditLedgerOptions) (*CreditsListCustomerCreditLedgerPage, error)` | `GET /api/v1/customers/{id_or_alias}/credit-ledger` | [`LedgerListResponse`](ledger_list_response.go) page of [`LedgerEntry`](ledger_entry.go) |
+| `client.Credits().ListCustomerCreditLedgerAutoPaging(ctx, idOrAlias string, options *CreditsListCustomerCreditLedgerOptions) *AutoPager[LedgerEntry]` | `GET /api/v1/customers/{id_or_alias}/credit-ledger` | every [`LedgerEntry`](ledger_entry.go) |
+| `client.Credits().CreateCustomerTopUp(ctx, idOrAlias string, idempotencyKey string, createTopUpRequest CreateTopUpRequest) (*TopUpResponse, error)` | `POST /api/v1/customers/{id_or_alias}/top-ups` | [`TopUpResponse`](top_up_response.go) |
+
+### Credits grants
+
+[`client.Credits().Grants()`](credits_grants.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.Credits().Grants().List(ctx, idOrAlias string, options *CreditsGrantsListOptions) (*CreditsGrantsListPage, error)` | `GET /api/v1/customers/{id_or_alias}/credit-grants` | [`CreditGrantListResponse`](credit_grant_list_response.go) page of [`CreditGrant`](credit_grant.go) |
+| `client.Credits().Grants().ListAutoPaging(ctx, idOrAlias string, options *CreditsGrantsListOptions) *AutoPager[CreditGrant]` | `GET /api/v1/customers/{id_or_alias}/credit-grants` | every [`CreditGrant`](credit_grant.go) |
+| `client.Credits().Grants().Create(ctx, idOrAlias string, idempotencyKey string, createCreditGrantRequest CreateCreditGrantRequest) (*CreditGrant, error)` | `POST /api/v1/customers/{id_or_alias}/credit-grants` | [`CreditGrant`](credit_grant.go) |
+
+### Credits wallets
+
+[`client.Credits().Wallets()`](credits_wallets.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.Credits().Wallets().List(ctx, idOrAlias string, options *CreditsWalletsListOptions) (*WalletListResponse, error)` | `GET /api/v1/customers/{id_or_alias}/wallets` | [`WalletListResponse`](wallet_list_response.go) |
+| `client.Credits().Wallets().Check(ctx, idOrAlias string, options *CreditsWalletsCheckOptions) (*WalletCheck, error)` | `GET /api/v1/customers/{id_or_alias}/wallets/check` | [`WalletCheck`](wallet_check.go) |
+| `client.Credits().Wallets().Update(ctx, idOrAlias string, currency string, idempotencyKey string, patchWalletRequest PatchWalletRequest) (*Wallet, error)` | `PATCH /api/v1/customers/{id_or_alias}/wallets/{currency}` | [`Wallet`](wallet.go) |
 
 ## Custom properties
 
@@ -291,9 +362,42 @@ in the `meteroid` package.
 
 | Method | Request | Returns |
 | --- | --- | --- |
-| `client.Usage().RetrieveCustomer(ctx, customerID string, startDate Date, endDate Date, options *UsageRetrieveCustomerOptions) (*UsageResponse, error)` | `GET /api/v1/usage/customer/{customer_id}` | [`UsageResponse`](usage_response.go) |
 | `client.Usage().RetrieveSubscription(ctx, subscriptionID string, options *UsageRetrieveSubscriptionOptions) (*UsageResponse, error)` | `GET /api/v1/usage/subscription/{subscription_id}` | [`UsageResponse`](usage_response.go) |
 | `client.Usage().RetrieveSummary(ctx, startDate Date, endDate Date, options *UsageRetrieveSummaryOptions) (*UsageResponse, error)` | `GET /api/v1/usage/summary` | [`UsageResponse`](usage_response.go) |
+
+### Usage customer
+
+[`client.Usage().Customer()`](usage_customer.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.Usage().Customer().Retrieve(ctx, customerID string, startDate Date, endDate Date, options *UsageCustomerRetrieveOptions) (*UsageResponse, error)` | `GET /api/v1/usage/customer/{customer_id}` | [`UsageResponse`](usage_response.go) |
+| `client.Usage().Customer().RetrieveUnattributed(ctx, customerID string, options *UsageCustomerRetrieveUnattributedOptions) (*UnattributedUsageResponse, error)` | `GET /api/v1/usage/customer/{customer_id}/unattributed` | [`UnattributedUsageResponse`](unattributed_usage_response.go) |
+
+## Usage costs
+
+[`client.UsageCosts()`](usage_costs.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+
+### Usage costs customer
+
+[`client.UsageCosts().Customer()`](usage_costs_customer.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.UsageCosts().Customer().ListCosts(ctx, customerID string, metric string, granularity ListCustomerUsageCostsGranularity, from time.Time, to time.Time, options *UsageCostsCustomerListCostsOptions) (*UsageCostListResponse, error)` | `GET /api/v1/usage/customer/{customer_id}/costs` | [`UsageCostListResponse`](usage_cost_list_response.go) |
+| `client.UsageCosts().Customer().ListEvents(ctx, customerID string, metric string, from time.Time, to time.Time, options *UsageCostsCustomerListEventsOptions) (*UsageEventListResponse, error)` | `GET /api/v1/usage/customer/{customer_id}/events` | [`UsageEventListResponse`](usage_event_list_response.go) |
+
+### Usage costs subscription
+
+[`client.UsageCosts().Subscription()`](usage_costs_subscription.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.UsageCosts().Subscription().ListCosts(ctx, subscriptionID string, metric string, granularity ListSubscriptionUsageCostsGranularity, from time.Time, to time.Time, options *UsageCostsSubscriptionListCostsOptions) (*UsageCostListResponse, error)` | `GET /api/v1/usage/subscription/{subscription_id}/costs` | [`UsageCostListResponse`](usage_cost_list_response.go) |
+| `client.UsageCosts().Subscription().ListEvents(ctx, subscriptionID string, metric string, from time.Time, to time.Time, options *UsageCostsSubscriptionListEventsOptions) (*UsageEventListResponse, error)` | `GET /api/v1/usage/subscription/{subscription_id}/events` | [`UsageEventListResponse`](usage_event_list_response.go) |
 
 ## Webhook endpoints
 

@@ -27,6 +27,8 @@ type SubscriptionUpdateRequest struct {
 	// Purchase order number
 	PurchaseOrder *Nullable[string] `json:"purchase_order,omitempty"`
 
+	UsageFilter *Nullable[UsageFilter] `json:"usage_filter,omitempty"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -42,7 +44,7 @@ func (v *SubscriptionUpdateRequest) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "auto_advance_invoices", "charge_automatically", "custom_properties", "invoice_memo", "net_terms", "payment_methods_config", "purchase_order")
+	v.ExtraFields = extraFields(fields, "auto_advance_invoices", "charge_automatically", "custom_properties", "invoice_memo", "net_terms", "payment_methods_config", "purchase_order", "usage_filter")
 	return nil
 }
 

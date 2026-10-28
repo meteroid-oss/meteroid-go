@@ -6,13 +6,29 @@ import "encoding/json"
 
 // MeteredEntitlementSpec is the MeteredEntitlementSpec object of the Meteroid API.
 type MeteredEntitlementSpec struct {
+	// False when switched off, or once a `BLOCK` limit (plus its grace) is reached. An `ALLOW`
+	// limit never turns it off.
 	Enabled bool `json:"enabled"`
+
+	// `BLOCK` only: usage allowed beyond the limit before it is refused, in percent of it.
+	GracePct *int32 `json:"grace_pct,omitempty"`
+
+	// Event property the limit applies to separately; usage is then the largest value's.
+	GroupBy *string `json:"group_by,omitempty"`
 
 	Limit *string `json:"limit,omitempty"`
 
 	MetricID BillableMetricID `json:"metric_id"`
 
+	OverageBehavior *EntitlementOverageBehavior `json:"overage_behavior,omitempty"`
+
 	ResetPeriod ResetPeriod `json:"reset_period"`
+
+	// Percents of the limit at which an alert is sent, ascending.
+	Thresholds []int32 `json:"thresholds,omitempty"`
+
+	// Deprecated: the lowest of `thresholds`.
+	WarningThresholdPct *int32 `json:"warning_threshold_pct,omitempty"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
@@ -29,7 +45,7 @@ func (v *MeteredEntitlementSpec) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "enabled", "limit", "metric_id", "reset_period")
+	v.ExtraFields = extraFields(fields, "enabled", "grace_pct", "group_by", "limit", "metric_id", "overage_behavior", "reset_period", "thresholds", "warning_threshold_pct")
 	return nil
 }
 

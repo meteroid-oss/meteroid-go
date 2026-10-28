@@ -8,6 +8,9 @@ import "encoding/json"
 type ExtraRecurringFeeStructure struct {
 	BillingType ExtraRecurringBillingTypeEnum `json:"billing_type"`
 
+	// Encodes as "EXTRA_RECURRING" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -23,12 +26,15 @@ func (v *ExtraRecurringFeeStructure) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "billing_type")
+	v.ExtraFields = extraFields(fields, "billing_type", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v ExtraRecurringFeeStructure) MarshalJSON() ([]byte, error) {
 	type plain ExtraRecurringFeeStructure
+	if v.Type == "" {
+		v.Type = "EXTRA_RECURRING"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

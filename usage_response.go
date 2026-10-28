@@ -2,13 +2,25 @@
 
 package meteroid
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
 // UsageResponse is the UsageResponse object of the Meteroid API.
 type UsageResponse struct {
+	// Beta: when `totals` and the metrics' `costs` were computed. These are present only when a
+	// subscription's current billing period is read (no `start_date` nor `end_date`) and its
+	// usage could be priced.
+	// RFC 3339 timestamp.
+	ComputedAt *time.Time `json:"computed_at,omitempty"`
+
 	PeriodEnd Date `json:"period_end"`
 
 	PeriodStart Date `json:"period_start"`
+
+	// Beta: the sum of the metrics' `costs`, per currency or credit unit.
+	Totals []UsageCost `json:"totals,omitempty"`
 
 	Usage RequiredSlice[MetricUsage] `json:"usage"`
 
@@ -27,7 +39,7 @@ func (v *UsageResponse) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "period_end", "period_start", "usage")
+	v.ExtraFields = extraFields(fields, "computed_at", "period_end", "period_start", "totals", "usage")
 	return nil
 }
 

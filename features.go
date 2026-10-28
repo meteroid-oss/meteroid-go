@@ -192,7 +192,8 @@ func (a *Features) Update(ctx context.Context, idOrCode string, updateFeatureReq
 
 // Archive a feature
 //
-// Keeps the feature and its entitlements but hides them from resolution.
+// Turns the feature off and hides it and its entitlements until it is unarchived, and frees its
+// code for a new feature.
 func (a *Features) Archive(ctx context.Context, idOrCode string, opts ...RequestOption) error {
 	req := newRequest(http.MethodPost, "/api/v1/features/{id_or_code}/archive", opts)
 	req.SetPathParam("id_or_code", idOrCode)
@@ -205,12 +206,16 @@ func (a *Features) Archive(ctx context.Context, idOrCode string, opts ...Request
 }
 
 // Unarchive a feature
+//
+// Makes the feature active again with all its entitlements. Fails while another feature uses its
+// code.
 func (a *Features) Unarchive(ctx context.Context, idOrCode string, opts ...RequestOption) error {
 	req := newRequest(http.MethodPost, "/api/v1/features/{id_or_code}/unarchive", opts)
 	req.SetPathParam("id_or_code", idOrCode)
 	req.errors = errorSchemas{
 		"401": errorSchema[RestErrorResponse],
 		"404": errorSchema[RestErrorResponse],
+		"409": errorSchema[RestErrorResponse],
 		"429": errorSchema[RestErrorResponse],
 	}
 	return a.client.execute(ctx, req, nil)

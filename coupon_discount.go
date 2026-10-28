@@ -21,6 +21,8 @@ type CouponDiscount struct {
 	Percentage *PercentageDiscount `json:"-"`
 	// Fixed is set when Type is CouponDiscountFixed.
 	Fixed *FixedDiscount `json:"-"`
+	// Credit is set when Type is CouponDiscountCredit.
+	Credit *CreditDiscount `json:"-"`
 
 	// raw keeps the payload of a variant this SDK version does not know about, so
 	// that decoding and re-encoding an unknown variant preserves every field and
@@ -37,6 +39,7 @@ type CouponDiscountType string
 const (
 	CouponDiscountPercentage CouponDiscountType = "PERCENTAGE"
 	CouponDiscountFixed      CouponDiscountType = "FIXED"
+	CouponDiscountCredit     CouponDiscountType = "CREDIT"
 )
 
 // NewCouponDiscountPercentage builds a CouponDiscount holding the PERCENTAGE variant.
@@ -49,13 +52,18 @@ func NewCouponDiscountFixed(value FixedDiscount) CouponDiscount {
 	return CouponDiscount{Type: CouponDiscountFixed, Fixed: &value}
 }
 
+// NewCouponDiscountCredit builds a CouponDiscount holding the CREDIT variant.
+func NewCouponDiscountCredit(value CreditDiscount) CouponDiscount {
+	return CouponDiscount{Type: CouponDiscountCredit, Credit: &value}
+}
+
 // IsKnown reports whether Type is one of the variants this SDK version
 // knows about, i.e. one of the CouponDiscount* constants. It is false for a
 // variant added to the API later, whose payload is then only available from
 // [CouponDiscount.Raw].
 func (u CouponDiscount) IsKnown() bool {
 	switch u.Type {
-	case CouponDiscountPercentage, CouponDiscountFixed:
+	case CouponDiscountPercentage, CouponDiscountFixed, CouponDiscountCredit:
 		return true
 	}
 	return false
@@ -84,6 +92,11 @@ func (u CouponDiscount) MarshalJSON() ([]byte, error) {
 			return nil, &UnionError{Union: "CouponDiscount", Discriminator: string(u.Type), Reason: "variant payload is nil"}
 		}
 		return marshalUnionVariant("type", string(u.Type), u.Fixed)
+	case CouponDiscountCredit:
+		if u.Credit == nil {
+			return nil, &UnionError{Union: "CouponDiscount", Discriminator: string(u.Type), Reason: "variant payload is nil"}
+		}
+		return marshalUnionVariant("type", string(u.Type), u.Credit)
 	}
 
 	if len(u.raw) > 0 {
@@ -117,6 +130,9 @@ func (u *CouponDiscount) UnmarshalJSON(data []byte) error {
 	case CouponDiscountFixed:
 		u.Fixed = new(FixedDiscount)
 		return json.Unmarshal(data, u.Fixed)
+	case CouponDiscountCredit:
+		u.Credit = new(CreditDiscount)
+		return json.Unmarshal(data, u.Credit)
 	default:
 		u.raw = append(json.RawMessage(nil), data...)
 		return nil

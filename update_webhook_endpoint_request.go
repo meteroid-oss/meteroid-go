@@ -12,7 +12,8 @@ type UpdateWebhookEndpointRequest struct {
 	// Re-enabling an endpoint also resets its consecutive failure count.
 	Disabled *Nullable[bool] `json:"disabled,omitempty"`
 
-	// Replaces the subscription list. An empty array subscribes to every event type.
+	// Replaces the subscription list. An empty array subscribes to every event type except Beta
+	// ones, which are sent only to endpoints that list them.
 	EventTypes *Nullable[[]string] `json:"event_types,omitempty"`
 
 	// Replaces the custom header list. An empty array removes every header.

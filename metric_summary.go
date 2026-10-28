@@ -27,6 +27,12 @@ type MetricSummary struct {
 
 	Name string `json:"name"`
 
+	// What several units of the metric are called, e.g. `tokens`.
+	UnitPlural *string `json:"unit_plural,omitempty"`
+
+	// What one unit of the metric is called, e.g. `token`.
+	UnitSingular *string `json:"unit_singular,omitempty"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -42,7 +48,7 @@ func (v *MetricSummary) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "aggregation_key", "aggregation_type", "archived_at", "code", "created_at", "description", "id", "name")
+	v.ExtraFields = extraFields(fields, "aggregation_key", "aggregation_type", "archived_at", "code", "created_at", "description", "id", "name", "unit_plural", "unit_singular")
 	return nil
 }
 

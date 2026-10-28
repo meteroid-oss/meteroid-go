@@ -8,6 +8,8 @@ import "encoding/json"
 type InvoiceLineItem struct {
 	AmountTotal int64 `json:"amount_total"`
 
+	CreditUnit *InvoiceLineCreditUnit `json:"credit_unit,omitempty"`
+
 	Description *string `json:"description,omitempty"`
 
 	EndDate Date `json:"end_date"`
@@ -43,7 +45,7 @@ func (v *InvoiceLineItem) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "amount_total", "description", "end_date", "name", "quantity", "quoted_unit_price", "start_date", "sub_line_items", "tax_rate", "unit_price")
+	v.ExtraFields = extraFields(fields, "amount_total", "credit_unit", "description", "end_date", "name", "quantity", "quoted_unit_price", "start_date", "sub_line_items", "tax_rate", "unit_price")
 	return nil
 }
 

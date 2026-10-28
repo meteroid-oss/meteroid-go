@@ -10,6 +10,9 @@ import "encoding/json"
 type FixedWindowResetPeriod struct {
 	Interval int32 `json:"interval"`
 
+	// Encodes as "FIXED_WINDOW" when left empty.
+	Type string `json:"type"`
+
 	Unit CalendarUnit `json:"unit"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -27,12 +30,15 @@ func (v *FixedWindowResetPeriod) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "interval", "unit")
+	v.ExtraFields = extraFields(fields, "interval", "type", "unit")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v FixedWindowResetPeriod) MarshalJSON() ([]byte, error) {
 	type plain FixedWindowResetPeriod
+	if v.Type == "" {
+		v.Type = "FIXED_WINDOW"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

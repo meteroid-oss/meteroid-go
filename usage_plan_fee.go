@@ -10,9 +10,14 @@ import "encoding/json"
 type UsagePlanFee struct {
 	Cadence BillingPeriodEnum `json:"cadence"`
 
+	CreditUnit *PlanFeeCreditUnit `json:"credit_unit,omitempty"`
+
 	MetricID BillableMetricID `json:"metric_id"`
 
 	Pricing PlanUsagePricingModel `json:"pricing"`
+
+	// Encodes as "USAGE" when left empty.
+	Type string `json:"type"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
@@ -29,12 +34,15 @@ func (v *UsagePlanFee) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "cadence", "metric_id", "pricing")
+	v.ExtraFields = extraFields(fields, "cadence", "credit_unit", "metric_id", "pricing", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v UsagePlanFee) MarshalJSON() ([]byte, error) {
 	type plain UsagePlanFee
+	if v.Type == "" {
+		v.Type = "USAGE"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

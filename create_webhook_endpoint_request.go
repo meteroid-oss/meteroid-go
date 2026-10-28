@@ -8,7 +8,8 @@ import "encoding/json"
 type CreateWebhookEndpointRequest struct {
 	Description *string `json:"description,omitempty"`
 
-	// Event types to subscribe to. Omit or leave empty to receive every event type.
+	// Event types to subscribe to. Omit or leave empty to receive every event type except Beta
+	// ones, which are sent only to endpoints that list them.
 	EventTypes []string `json:"event_types,omitempty"`
 
 	// Custom headers sent with every delivery.
