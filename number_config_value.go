@@ -8,6 +8,9 @@ import "encoding/json"
 //
 // A number config value (decimal, encoded as a string).
 type NumberConfigValue struct {
+	// Encodes as "NUMBER" when left empty.
+	Kind string `json:"kind"`
+
 	Value string `json:"value"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -25,12 +28,15 @@ func (v *NumberConfigValue) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "value")
+	v.ExtraFields = extraFields(fields, "kind", "value")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v NumberConfigValue) MarshalJSON() ([]byte, error) {
 	type plain NumberConfigValue
+	if v.Kind == "" {
+		v.Kind = "NUMBER"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

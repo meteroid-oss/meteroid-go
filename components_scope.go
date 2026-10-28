@@ -10,6 +10,9 @@ import "encoding/json"
 type ComponentsScope struct {
 	ComponentNames RequiredSlice[string] `json:"component_names"`
 
+	// Encodes as "components" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -25,12 +28,15 @@ func (v *ComponentsScope) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "component_names")
+	v.ExtraFields = extraFields(fields, "component_names", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v ComponentsScope) MarshalJSON() ([]byte, error) {
 	type plain ComponentsScope
+	if v.Type == "" {
+		v.Type = "components"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

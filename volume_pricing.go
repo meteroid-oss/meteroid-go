@@ -10,6 +10,9 @@ type VolumePricing struct {
 
 	Tiers RequiredSlice[TierRow] `json:"tiers"`
 
+	// Encodes as "VOLUME" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -25,12 +28,15 @@ func (v *VolumePricing) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "block_size", "tiers")
+	v.ExtraFields = extraFields(fields, "block_size", "tiers", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v VolumePricing) MarshalJSON() ([]byte, error) {
 	type plain VolumePricing
+	if v.Type == "" {
+		v.Type = "VOLUME"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

@@ -9,10 +9,31 @@ type MeteredEntitlementValue struct {
 	// Per-entitlement kill switch. `false` means disabled.
 	Enabled *bool `json:"enabled,omitempty"`
 
+	// `BLOCK` only: usage allowed beyond the limit before it is refused, in percent of the
+	// limit (1 to 1000).
+	GracePct *int32 `json:"grace_pct,omitempty"`
+
+	// Event property the limit applies to separately, one limit per value (e.g. `user_id`).
+	GroupBy *string `json:"group_by,omitempty"`
+
 	// Cap on usage. Null means unlimited.
 	Limit *string `json:"limit,omitempty"`
 
+	OverageBehavior *EntitlementOverageBehavior `json:"overage_behavior,omitempty"`
+
 	ResetPeriod *ResetPeriod `json:"reset_period,omitempty"`
+
+	// Percents of the limit (1 to 100, at most 10) at which an alert is sent, once per period:
+	// `entitlement.usage_threshold_reached`, or `entitlement.limit_reached` at 100. Requires a
+	// limit and a window that is not sliding.
+	Thresholds []int32 `json:"thresholds,omitempty"`
+
+	// Encodes as "METERED" when left empty.
+	Type string `json:"type"`
+
+	// Deprecated: use `thresholds`. A single alert threshold, read only when `thresholds` is
+	// omitted; returned as the lowest of `thresholds`.
+	WarningThresholdPct *int32 `json:"warning_threshold_pct,omitempty"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
@@ -29,12 +50,15 @@ func (v *MeteredEntitlementValue) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "enabled", "limit", "reset_period")
+	v.ExtraFields = extraFields(fields, "enabled", "grace_pct", "group_by", "limit", "overage_behavior", "reset_period", "thresholds", "type", "warning_threshold_pct")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v MeteredEntitlementValue) MarshalJSON() ([]byte, error) {
 	type plain MeteredEntitlementValue
+	if v.Type == "" {
+		v.Type = "METERED"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

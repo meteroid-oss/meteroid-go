@@ -11,6 +11,8 @@ import (
 type Invoice struct {
 	AmountDue int64 `json:"amount_due"`
 
+	// Paid credit applied after tax, in minor units of the invoice currency: it settles part of
+	// `total` like a payment, and `amount_due` is net of it.
 	AppliedCredits int64 `json:"applied_credits"`
 
 	// The period/moment this invoice is about — the subscription period start, or the invoice's
@@ -63,11 +65,26 @@ type Invoice struct {
 
 	ParentInvoiceID *InvoiceID `json:"parent_invoice_id,omitempty"`
 
+	// When a dispute or chargeback first took money still lost on this invoice's payments. The
+	// invoice stays paid; absent when nothing is disputed.
+	// RFC 3339 timestamp.
+	PaymentDisputedAt *time.Time `json:"payment_disputed_at,omitempty"`
+
 	PaymentStatus InvoicePaymentStatus `json:"payment_status"`
+
+	// Promotional credit applied before tax (credit included with the plan, coupon credit, bonus
+	// credit), in minor units of the invoice currency. Like a discount, it reduces the taxable
+	// amount: `tax_amount` and `total` already exclude it, `subtotal` does not. Unlike
+	// `applied_credits`, which settles part of the `total` after tax.
+	PromotionalCredits *int64 `json:"promotional_credits,omitempty"`
 
 	PurchaseOrder *string `json:"purchase_order,omitempty"`
 
 	Reference *string `json:"reference,omitempty"`
+
+	// True when the invoice is `PAID` without any payment: finalized credit notes cancelled its
+	// whole total. Nothing was collected, so it books no cash.
+	SettledByCreditNotes bool `json:"settled_by_credit_notes"`
 
 	Status InvoiceStatus `json:"status"`
 
@@ -106,11 +123,11 @@ func (v *Invoice) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	fields, err := objectFields(data, "Invoice", "amount_due", "applied_credits", "coupons", "created_at", "currency", "customer_details", "customer_id", "id", "invoice_date", "invoice_number", "invoice_type", "line_items", "net_terms", "payment_status", "status", "subtotal", "subtotal_recurring", "tax_amount", "tax_breakdown", "tax_inclusive", "total", "transactions")
+	fields, err := objectFields(data, "Invoice", "amount_due", "applied_credits", "coupons", "created_at", "currency", "customer_details", "customer_id", "id", "invoice_date", "invoice_number", "invoice_type", "line_items", "net_terms", "payment_status", "settled_by_credit_notes", "status", "subtotal", "subtotal_recurring", "tax_amount", "tax_breakdown", "tax_inclusive", "total", "transactions")
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "amount_due", "applied_credits", "billing_period_start", "child_invoice_id", "coupons", "created_at", "currency", "custom_properties", "customer_details", "customer_id", "due_date", "einvoicing_status", "finalized_at", "id", "invoice_date", "invoice_number", "invoice_type", "line_items", "marked_as_uncollectible_at", "memo", "net_terms", "paid_at", "parent_invoice_id", "payment_status", "purchase_order", "reference", "status", "subscription_id", "subtotal", "subtotal_recurring", "tax_amount", "tax_breakdown", "tax_inclusive", "total", "transactions", "updated_at", "voided_at")
+	v.ExtraFields = extraFields(fields, "amount_due", "applied_credits", "billing_period_start", "child_invoice_id", "coupons", "created_at", "currency", "custom_properties", "customer_details", "customer_id", "due_date", "einvoicing_status", "finalized_at", "id", "invoice_date", "invoice_number", "invoice_type", "line_items", "marked_as_uncollectible_at", "memo", "net_terms", "paid_at", "parent_invoice_id", "payment_disputed_at", "payment_status", "promotional_credits", "purchase_order", "reference", "settled_by_credit_notes", "status", "subscription_id", "subtotal", "subtotal_recurring", "tax_amount", "tax_breakdown", "tax_inclusive", "total", "transactions", "updated_at", "voided_at")
 	return nil
 }
 

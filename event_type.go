@@ -47,7 +47,20 @@ const (
 	EventTypeRefundSettled                 EventType = "refund.settled"
 	EventTypeRefundFailed                  EventType = "refund.failed"
 	EventTypePaymentReversed               EventType = "payment.reversed"
+	EventTypePaymentReinstated             EventType = "payment.reinstated"
 	EventTypePaymentFailed                 EventType = "payment.failed"
+	EventTypeWalletFunded                  EventType = "wallet.funded"
+	EventTypeWalletDebited                 EventType = "wallet.debited"
+	EventTypeWalletBalanceLow              EventType = "wallet.balance_low"
+	EventTypeWalletCreditUnrecovered       EventType = "wallet.credit_unrecovered"
+	EventTypeWalletCreditRecovered         EventType = "wallet.credit_recovered"
+	EventTypeWalletAutoTopUpFailed         EventType = "wallet.auto_top_up_failed"
+	EventTypeWalletAutoTopUpSuspended      EventType = "wallet.auto_top_up_suspended"
+	EventTypeWalletAutoTopUpConsentChanged EventType = "wallet.auto_top_up_consent_changed"
+	EventTypeWalletDepleted                EventType = "wallet.depleted"
+	EventTypeWalletRecovered               EventType = "wallet.recovered"
+	EventTypeWalletAutoTopUpCapReached     EventType = "wallet.auto_top_up_cap_reached"
+	EventTypeCreditGrantExpired            EventType = "credit_grant.expired"
 )
 
 // AllEventTypeValues lists every EventType value known to this SDK version.
@@ -89,7 +102,20 @@ var AllEventTypeValues = []EventType{
 	EventTypeRefundSettled,
 	EventTypeRefundFailed,
 	EventTypePaymentReversed,
+	EventTypePaymentReinstated,
 	EventTypePaymentFailed,
+	EventTypeWalletFunded,
+	EventTypeWalletDebited,
+	EventTypeWalletBalanceLow,
+	EventTypeWalletCreditUnrecovered,
+	EventTypeWalletCreditRecovered,
+	EventTypeWalletAutoTopUpFailed,
+	EventTypeWalletAutoTopUpSuspended,
+	EventTypeWalletAutoTopUpConsentChanged,
+	EventTypeWalletDepleted,
+	EventTypeWalletRecovered,
+	EventTypeWalletAutoTopUpCapReached,
+	EventTypeCreditGrantExpired,
 }
 
 // String returns the wire representation of the value.

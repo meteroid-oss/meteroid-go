@@ -12,6 +12,8 @@ type ReplacePlanRequest struct {
 
 	Components RequiredSlice[PriceComponentInput] `json:"components"`
 
+	CreditExhaustedRule *CreditExhaustedRule `json:"credit_exhausted_rule,omitempty"`
+
 	Currency string `json:"currency"`
 
 	Description *string `json:"description,omitempty"`
@@ -50,7 +52,7 @@ func (v *ReplacePlanRequest) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "add_ons", "billing", "components", "currency", "description", "entitlements", "minimum_commitment", "name", "status", "tax_inclusive", "trial")
+	v.ExtraFields = extraFields(fields, "add_ons", "billing", "components", "credit_exhausted_rule", "currency", "description", "entitlements", "minimum_commitment", "name", "status", "tax_inclusive", "trial")
 	return nil
 }
 

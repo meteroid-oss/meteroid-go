@@ -20,6 +20,7 @@ const (
 	DeclineKindFraud                  DeclineKind = "FRAUD"
 	DeclineKindProcessingError        DeclineKind = "PROCESSING_ERROR"
 	DeclineKindOther                  DeclineKind = "OTHER"
+	DeclineKindDoNotRetry             DeclineKind = "DO_NOT_RETRY"
 )
 
 // AllDeclineKindValues lists every DeclineKind value known to this SDK version.
@@ -32,6 +33,7 @@ var AllDeclineKindValues = []DeclineKind{
 	DeclineKindFraud,
 	DeclineKindProcessingError,
 	DeclineKindOther,
+	DeclineKindDoNotRetry,
 }
 
 // String returns the wire representation of the value.

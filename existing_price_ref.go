@@ -8,6 +8,9 @@ import "encoding/json"
 type ExistingPriceRef struct {
 	ID PriceID `json:"id"`
 
+	// Encodes as "EXISTING" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -23,12 +26,15 @@ func (v *ExistingPriceRef) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "id")
+	v.ExtraFields = extraFields(fields, "id", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v ExistingPriceRef) MarshalJSON() ([]byte, error) {
 	type plain ExistingPriceRef
+	if v.Type == "" {
+		v.Type = "EXISTING"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

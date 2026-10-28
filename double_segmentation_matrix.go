@@ -10,6 +10,9 @@ type DoubleSegmentationMatrix struct {
 
 	Dimension2 MetricDimension `json:"dimension2"`
 
+	// Encodes as "DOUBLE" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -25,12 +28,15 @@ func (v *DoubleSegmentationMatrix) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "dimension1", "dimension2")
+	v.ExtraFields = extraFields(fields, "dimension1", "dimension2", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v DoubleSegmentationMatrix) MarshalJSON() ([]byte, error) {
 	type plain DoubleSegmentationMatrix
+	if v.Type == "" {
+		v.Type = "DOUBLE"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

@@ -29,6 +29,8 @@ type ProductFeeStructure struct {
 	ExtraRecurring *ExtraRecurringFeeStructure `json:"-"`
 	// OneTime is set when Type is ProductFeeStructureOneTime.
 	OneTime *OneTimeFeeStructure `json:"-"`
+	// Credit is set when Type is ProductFeeStructureCredit.
+	Credit *CreditFeeStructure `json:"-"`
 
 	// raw keeps the payload of a variant this SDK version does not know about, so
 	// that decoding and re-encoding an unknown variant preserves every field and
@@ -49,6 +51,7 @@ const (
 	ProductFeeStructureUsage          ProductFeeStructureType = "USAGE"
 	ProductFeeStructureExtraRecurring ProductFeeStructureType = "EXTRA_RECURRING"
 	ProductFeeStructureOneTime        ProductFeeStructureType = "ONE_TIME"
+	ProductFeeStructureCredit         ProductFeeStructureType = "CREDIT"
 )
 
 // NewProductFeeStructureRate builds a ProductFeeStructure holding the RATE variant.
@@ -81,13 +84,18 @@ func NewProductFeeStructureOneTime(value OneTimeFeeStructure) ProductFeeStructur
 	return ProductFeeStructure{Type: ProductFeeStructureOneTime, OneTime: &value}
 }
 
+// NewProductFeeStructureCredit builds a ProductFeeStructure holding the CREDIT variant.
+func NewProductFeeStructureCredit(value CreditFeeStructure) ProductFeeStructure {
+	return ProductFeeStructure{Type: ProductFeeStructureCredit, Credit: &value}
+}
+
 // IsKnown reports whether Type is one of the variants this SDK version
 // knows about, i.e. one of the ProductFeeStructure* constants. It is false for a
 // variant added to the API later, whose payload is then only available from
 // [ProductFeeStructure.Raw].
 func (u ProductFeeStructure) IsKnown() bool {
 	switch u.Type {
-	case ProductFeeStructureRate, ProductFeeStructureSlot, ProductFeeStructureCapacity, ProductFeeStructureUsage, ProductFeeStructureExtraRecurring, ProductFeeStructureOneTime:
+	case ProductFeeStructureRate, ProductFeeStructureSlot, ProductFeeStructureCapacity, ProductFeeStructureUsage, ProductFeeStructureExtraRecurring, ProductFeeStructureOneTime, ProductFeeStructureCredit:
 		return true
 	}
 	return false
@@ -136,6 +144,11 @@ func (u ProductFeeStructure) MarshalJSON() ([]byte, error) {
 			return nil, &UnionError{Union: "ProductFeeStructure", Discriminator: string(u.Type), Reason: "variant payload is nil"}
 		}
 		return marshalUnionVariant("type", string(u.Type), u.OneTime)
+	case ProductFeeStructureCredit:
+		if u.Credit == nil {
+			return nil, &UnionError{Union: "ProductFeeStructure", Discriminator: string(u.Type), Reason: "variant payload is nil"}
+		}
+		return marshalUnionVariant("type", string(u.Type), u.Credit)
 	}
 
 	if len(u.raw) > 0 {
@@ -181,6 +194,9 @@ func (u *ProductFeeStructure) UnmarshalJSON(data []byte) error {
 	case ProductFeeStructureOneTime:
 		u.OneTime = new(OneTimeFeeStructure)
 		return json.Unmarshal(data, u.OneTime)
+	case ProductFeeStructureCredit:
+		u.Credit = new(CreditFeeStructure)
+		return json.Unmarshal(data, u.Credit)
 	default:
 		u.raw = append(json.RawMessage(nil), data...)
 		return nil

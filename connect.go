@@ -33,15 +33,15 @@ func (a *Connect) ListConnectedAccounts(ctx context.Context, opts ...RequestOpti
 //
 // # Create connected account
 //
-// Create a new connected account (Express flow). Returns the account
-// and an onboarding link for the user to complete setup.
-func (a *Connect) CreateConnectedAccount(ctx context.Context, createConnectedAccountRequest CreateConnectedAccountRequest, opts ...RequestOption) (*ConnectedAccount, error) {
+// Create a new pending connected account (Express flow). Returns the
+// account and an onboarding link for the user to complete setup.
+func (a *Connect) CreateConnectedAccount(ctx context.Context, createConnectedAccountRequest CreateConnectedAccountRequest, opts ...RequestOption) (*CreateConnectedAccountResponse, error) {
 	req := newRequest(http.MethodPost, "/api/v1/connected-accounts", opts)
 	req.errors = errorSchemas{
 		"429": errorSchema[RestErrorResponse],
 	}
 	req.SetJSONBody(createConnectedAccountRequest)
-	var out ConnectedAccount
+	var out CreateConnectedAccountResponse
 	if err := a.client.execute(ctx, req, &out); err != nil {
 		return nil, err
 	}

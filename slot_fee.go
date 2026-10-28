@@ -12,6 +12,9 @@ type SlotFee struct {
 
 	MinSlots *int32 `json:"min_slots,omitempty"`
 
+	// Encodes as "SLOT" when left empty.
+	Type string `json:"type"`
+
 	Unit string `json:"unit"`
 
 	UnitRate string `json:"unit_rate"`
@@ -31,12 +34,15 @@ func (v *SlotFee) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "initial_slots", "max_slots", "min_slots", "unit", "unit_rate")
+	v.ExtraFields = extraFields(fields, "initial_slots", "max_slots", "min_slots", "type", "unit", "unit_rate")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v SlotFee) MarshalJSON() ([]byte, error) {
 	type plain SlotFee
+	if v.Type == "" {
+		v.Type = "SLOT"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

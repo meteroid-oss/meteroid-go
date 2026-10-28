@@ -34,6 +34,12 @@ type MetricEvent struct {
 
 	UnitConversionRounding *UnitConversionRoundingEnum `json:"unit_conversion_rounding,omitempty"`
 
+	// What several units of the metric are called, e.g. `tokens`.
+	UnitPlural *string `json:"unit_plural,omitempty"`
+
+	// What one unit of the metric is called, e.g. `token`.
+	UnitSingular *string `json:"unit_singular,omitempty"`
+
 	UsageGroupKey *string `json:"usage_group_key,omitempty"`
 
 	ID EventID `json:"id"`
@@ -58,7 +64,7 @@ func (v *MetricEvent) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "aggregation_key", "aggregation_type", "code", "created_at", "description", "metric_id", "name", "product_family_id", "product_id", "segmentation_matrix", "unit_conversion_factor", "unit_conversion_rounding", "usage_group_key", "id", "timestamp", "type")
+	v.ExtraFields = extraFields(fields, "aggregation_key", "aggregation_type", "code", "created_at", "description", "metric_id", "name", "product_family_id", "product_id", "segmentation_matrix", "unit_conversion_factor", "unit_conversion_rounding", "unit_plural", "unit_singular", "usage_group_key", "id", "timestamp", "type")
 	return nil
 }
 

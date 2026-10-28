@@ -8,6 +8,9 @@ import "encoding/json"
 //
 // A boolean config value.
 type BooleanConfigValue struct {
+	// Encodes as "BOOLEAN" when left empty.
+	Kind string `json:"kind"`
+
 	Value bool `json:"value"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -25,12 +28,15 @@ func (v *BooleanConfigValue) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "value")
+	v.ExtraFields = extraFields(fields, "kind", "value")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v BooleanConfigValue) MarshalJSON() ([]byte, error) {
 	type plain BooleanConfigValue
+	if v.Kind == "" {
+		v.Kind = "BOOLEAN"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

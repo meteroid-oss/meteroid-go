@@ -87,6 +87,13 @@ type Subscription struct {
 	// Trial duration in days
 	TrialDuration *int32 `json:"trial_duration,omitempty"`
 
+	UsageFilter *UsageFilter `json:"usage_filter,omitempty"`
+
+	// When the current usage filter, or its removal, started to apply: the start of the usage
+	// neither this subscription nor the customer's others had invoiced when it was set.
+	// RFC 3339 timestamp.
+	UsageFilterEffectiveFrom *time.Time `json:"usage_filter_effective_from,omitempty"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -102,7 +109,7 @@ func (v *Subscription) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "activated_at", "auto_advance_invoices", "billing_day_anchor", "billing_start_date", "charge_automatically", "created_at", "currency", "current_period_end", "current_period_start", "custom_properties", "customer_alias", "customer_id", "customer_name", "end_date", "id", "invoice_memo", "mrr_cents", "net_terms", "payment_methods_config", "period", "plan_description", "plan_id", "plan_name", "plan_version", "plan_version_id", "purchase_order", "start_date", "status", "tax_inclusive", "trial_duration")
+	v.ExtraFields = extraFields(fields, "activated_at", "auto_advance_invoices", "billing_day_anchor", "billing_start_date", "charge_automatically", "created_at", "currency", "current_period_end", "current_period_start", "custom_properties", "customer_alias", "customer_id", "customer_name", "end_date", "id", "invoice_memo", "mrr_cents", "net_terms", "payment_methods_config", "period", "plan_description", "plan_id", "plan_name", "plan_version", "plan_version_id", "purchase_order", "start_date", "status", "tax_inclusive", "trial_duration", "usage_filter", "usage_filter_effective_from")
 	return nil
 }
 

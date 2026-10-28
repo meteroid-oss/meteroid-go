@@ -8,6 +8,9 @@ import "encoding/json"
 type MatrixPricing struct {
 	Rates RequiredSlice[MatrixRow] `json:"rates"`
 
+	// Encodes as "MATRIX" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -23,12 +26,15 @@ func (v *MatrixPricing) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "rates")
+	v.ExtraFields = extraFields(fields, "rates", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v MatrixPricing) MarshalJSON() ([]byte, error) {
 	type plain MatrixPricing
+	if v.Type == "" {
+		v.Type = "MATRIX"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

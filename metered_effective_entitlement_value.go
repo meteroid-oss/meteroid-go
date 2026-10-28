@@ -8,6 +8,9 @@ import "encoding/json"
 type MeteredEffectiveEntitlementValue struct {
 	Spec MeteredEntitlementSpec `json:"spec"`
 
+	// Encodes as "METERED" when left empty.
+	Type string `json:"type"`
+
 	Usage MeteredEntitlementUsage `json:"usage"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -25,12 +28,15 @@ func (v *MeteredEffectiveEntitlementValue) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "spec", "usage")
+	v.ExtraFields = extraFields(fields, "spec", "type", "usage")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v MeteredEffectiveEntitlementValue) MarshalJSON() ([]byte, error) {
 	type plain MeteredEffectiveEntitlementValue
+	if v.Type == "" {
+		v.Type = "METERED"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

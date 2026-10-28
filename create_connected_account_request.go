@@ -2,21 +2,21 @@
 
 package meteroid
 
-import (
-	"encoding/json"
-
-	"github.com/google/uuid"
-)
+import "encoding/json"
 
 // CreateConnectedAccountRequest is the CreateConnectedAccountRequest object of the Meteroid API.
 type CreateConnectedAccountRequest struct {
-	ConnectedOrganizationID uuid.UUID `json:"connected_organization_id"`
+	Country *CountryCode `json:"country,omitempty"`
 
-	ConnectionType *ConnectionType `json:"connection_type,omitempty"`
+	Email string `json:"email"`
 
 	Metadata json.RawMessage `json:"metadata,omitempty"`
 
-	PlatformCustomerID *CustomerID `json:"platform_customer_id,omitempty"`
+	Mode *OnboardingMode `json:"mode,omitempty"`
+
+	OrganizationName string `json:"organization_name"`
+
+	RedirectURL *string `json:"redirect_url,omitempty"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
@@ -29,11 +29,11 @@ func (v *CreateConnectedAccountRequest) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	fields, err := objectFields(data, "CreateConnectedAccountRequest", "connected_organization_id")
+	fields, err := objectFields(data, "CreateConnectedAccountRequest", "email", "organization_name")
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "connected_organization_id", "connection_type", "metadata", "platform_customer_id")
+	v.ExtraFields = extraFields(fields, "country", "email", "metadata", "mode", "organization_name", "redirect_url")
 	return nil
 }
 

@@ -10,6 +10,9 @@ import "encoding/json"
 type CalendarResetPeriod struct {
 	Interval int32 `json:"interval"`
 
+	// Encodes as "CALENDAR" when left empty.
+	Type string `json:"type"`
+
 	Unit CalendarUnit `json:"unit"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -27,12 +30,15 @@ func (v *CalendarResetPeriod) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "interval", "unit")
+	v.ExtraFields = extraFields(fields, "interval", "type", "unit")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v CalendarResetPeriod) MarshalJSON() ([]byte, error) {
 	type plain CalendarResetPeriod
+	if v.Type == "" {
+		v.Type = "CALENDAR"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

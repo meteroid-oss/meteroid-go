@@ -27,6 +27,15 @@ type CreateMetricRequest struct {
 
 	UnitConversion *UnitConversion `json:"unit_conversion,omitempty"`
 
+	// What several units of the metric are called, e.g. `tokens`. Set together with
+	// `unit_singular`. Trimmed; at most 32 characters.
+	UnitPlural *string `json:"unit_plural,omitempty"`
+
+	// What one unit of the metric is called, e.g. `token`, used to label quantities and
+	// prices ("$12.00 per 1M tokens"). Set both `unit_singular` and `unit_plural`, or neither.
+	// Trimmed; at most 32 characters.
+	UnitSingular *string `json:"unit_singular,omitempty"`
+
 	UsageGroupKey *string `json:"usage_group_key,omitempty"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -44,7 +53,7 @@ func (v *CreateMetricRequest) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "aggregation_key", "aggregation_type", "code", "description", "filters", "name", "product_family_id", "product_id", "segmentation_matrix", "unit_conversion", "usage_group_key")
+	v.ExtraFields = extraFields(fields, "aggregation_key", "aggregation_type", "code", "description", "filters", "name", "product_family_id", "product_id", "segmentation_matrix", "unit_conversion", "unit_plural", "unit_singular", "usage_group_key")
 	return nil
 }
 

@@ -11,6 +11,10 @@ import (
 type Transaction struct {
 	Amount int64 `json:"amount"`
 
+	// On a PAYMENT: the part of `amount_reversed` lost to disputes or chargebacks. The invoice
+	// stays paid; only the rest of `amount_reversed` (a failed collection) reopens it.
+	AmountDisputed *int64 `json:"amount_disputed,omitempty"`
+
 	// On a PAYMENT: how much was voluntarily given back (the sum of its settled REFUND
 	// children). The invoice stays paid — the Refund credit note is what reduces it.
 	AmountRefunded int64 `json:"amount_refunded"`
@@ -18,6 +22,10 @@ type Transaction struct {
 	// On a PAYMENT: how much was involuntarily clawed back (chargeback, bank recall, lost
 	// dispute). This is what the invoice nets out, reopening it.
 	AmountReversed int64 `json:"amount_reversed"`
+
+	// On a PAYMENT: what the provider withdrew above what the payment still held (refunded
+	// before). Never applied to the invoice or credit: contest it with the provider.
+	AmountReversedExcess *int64 `json:"amount_reversed_excess,omitempty"`
 
 	CreditNoteID *CreditNoteID `json:"credit_note_id,omitempty"`
 
@@ -64,7 +72,7 @@ func (v *Transaction) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "amount", "amount_refunded", "amount_reversed", "credit_note_id", "currency", "error", "id", "parent_transaction_id", "payment_method_id", "payment_method_info", "payment_type", "processed_at", "provider_transaction_id", "refund_mode", "reversal_kind", "reversal_reason", "status")
+	v.ExtraFields = extraFields(fields, "amount", "amount_disputed", "amount_refunded", "amount_reversed", "amount_reversed_excess", "credit_note_id", "currency", "error", "id", "parent_transaction_id", "payment_method_id", "payment_method_info", "payment_type", "processed_at", "provider_transaction_id", "refund_mode", "reversal_kind", "reversal_reason", "status")
 	return nil
 }
 

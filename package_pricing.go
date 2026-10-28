@@ -10,6 +10,9 @@ type PackagePricing struct {
 
 	Rate string `json:"rate"`
 
+	// Encodes as "PACKAGE" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -25,12 +28,15 @@ func (v *PackagePricing) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "block_size", "rate")
+	v.ExtraFields = extraFields(fields, "block_size", "rate", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v PackagePricing) MarshalJSON() ([]byte, error) {
 	type plain PackagePricing
+	if v.Type == "" {
+		v.Type = "PACKAGE"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

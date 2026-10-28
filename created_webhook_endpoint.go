@@ -24,7 +24,8 @@ type CreatedWebhookEndpoint struct {
 
 	DisabledReason *WebhookEndpointDisabledReason `json:"disabled_reason,omitempty"`
 
-	// Subscribed event types. Empty means every event type.
+	// Subscribed event types. Empty means every event type except Beta ones, which are sent
+	// only to endpoints that list them.
 	EventTypes RequiredSlice[string] `json:"event_types"`
 
 	// Custom headers sent with every delivery.

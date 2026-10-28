@@ -16,6 +16,7 @@ const (
 	ProductFeeTypeEnumUsage          ProductFeeTypeEnum = "USAGE"
 	ProductFeeTypeEnumExtraRecurring ProductFeeTypeEnum = "EXTRA_RECURRING"
 	ProductFeeTypeEnumOneTime        ProductFeeTypeEnum = "ONE_TIME"
+	ProductFeeTypeEnumCredit         ProductFeeTypeEnum = "CREDIT"
 )
 
 // AllProductFeeTypeEnumValues lists every ProductFeeTypeEnum value known to this SDK version.
@@ -26,6 +27,7 @@ var AllProductFeeTypeEnumValues = []ProductFeeTypeEnum{
 	ProductFeeTypeEnumUsage,
 	ProductFeeTypeEnumExtraRecurring,
 	ProductFeeTypeEnumOneTime,
+	ProductFeeTypeEnumCredit,
 }
 
 // String returns the wire representation of the value.

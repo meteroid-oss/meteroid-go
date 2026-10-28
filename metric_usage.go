@@ -6,6 +6,10 @@ import "encoding/json"
 
 // MetricUsage is the MetricUsage object of the Meteroid API.
 type MetricUsage struct {
+	// Beta: what the metric's usage adds so far to the subscription's next invoice, per currency
+	// or credit unit; empty while it bills nothing, as during a free trial or once cancelled.
+	Costs []UsageCost `json:"costs,omitempty"`
+
 	GroupedUsage RequiredSlice[GroupedUsage] `json:"grouped_usage"`
 
 	MetricCode string `json:"metric_code"`
@@ -31,7 +35,7 @@ func (v *MetricUsage) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "grouped_usage", "metric_code", "metric_id", "metric_name", "total_value")
+	v.ExtraFields = extraFields(fields, "costs", "grouped_usage", "metric_code", "metric_id", "metric_name", "total_value")
 	return nil
 }
 

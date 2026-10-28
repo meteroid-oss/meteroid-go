@@ -6,6 +6,9 @@ import "encoding/json"
 
 // ConfigEffectiveEntitlementValue is the ConfigEffectiveEntitlementValue object of the Meteroid API.
 type ConfigEffectiveEntitlementValue struct {
+	// Encodes as "CONFIG" when left empty.
+	Type string `json:"type"`
+
 	Value ConfigValue `json:"value"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -23,12 +26,15 @@ func (v *ConfigEffectiveEntitlementValue) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "value")
+	v.ExtraFields = extraFields(fields, "type", "value")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v ConfigEffectiveEntitlementValue) MarshalJSON() ([]byte, error) {
 	type plain ConfigEffectiveEntitlementValue
+	if v.Type == "" {
+		v.Type = "CONFIG"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

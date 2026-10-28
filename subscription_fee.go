@@ -29,6 +29,8 @@ type SubscriptionFee struct {
 	Slot *SlotFee `json:"-"`
 	// Usage is set when Type is SubscriptionFeeUsage.
 	Usage *UsageFee `json:"-"`
+	// Credit is set when Type is SubscriptionFeeCredit.
+	Credit *CreditFee `json:"-"`
 
 	// raw keeps the payload of a variant this SDK version does not know about, so
 	// that decoding and re-encoding an unknown variant preserves every field and
@@ -49,6 +51,7 @@ const (
 	SubscriptionFeeCapacity  SubscriptionFeeType = "CAPACITY"
 	SubscriptionFeeSlot      SubscriptionFeeType = "SLOT"
 	SubscriptionFeeUsage     SubscriptionFeeType = "USAGE"
+	SubscriptionFeeCredit    SubscriptionFeeType = "CREDIT"
 )
 
 // NewSubscriptionFeeRate builds a SubscriptionFee holding the RATE variant.
@@ -81,13 +84,18 @@ func NewSubscriptionFeeUsage(value UsageFee) SubscriptionFee {
 	return SubscriptionFee{Type: SubscriptionFeeUsage, Usage: &value}
 }
 
+// NewSubscriptionFeeCredit builds a SubscriptionFee holding the CREDIT variant.
+func NewSubscriptionFeeCredit(value CreditFee) SubscriptionFee {
+	return SubscriptionFee{Type: SubscriptionFeeCredit, Credit: &value}
+}
+
 // IsKnown reports whether Type is one of the variants this SDK version
 // knows about, i.e. one of the SubscriptionFee* constants. It is false for a
 // variant added to the API later, whose payload is then only available from
 // [SubscriptionFee.Raw].
 func (u SubscriptionFee) IsKnown() bool {
 	switch u.Type {
-	case SubscriptionFeeRate, SubscriptionFeeOneTime, SubscriptionFeeRecurring, SubscriptionFeeCapacity, SubscriptionFeeSlot, SubscriptionFeeUsage:
+	case SubscriptionFeeRate, SubscriptionFeeOneTime, SubscriptionFeeRecurring, SubscriptionFeeCapacity, SubscriptionFeeSlot, SubscriptionFeeUsage, SubscriptionFeeCredit:
 		return true
 	}
 	return false
@@ -136,6 +144,11 @@ func (u SubscriptionFee) MarshalJSON() ([]byte, error) {
 			return nil, &UnionError{Union: "SubscriptionFee", Discriminator: string(u.Type), Reason: "variant payload is nil"}
 		}
 		return marshalUnionVariant("type", string(u.Type), u.Usage)
+	case SubscriptionFeeCredit:
+		if u.Credit == nil {
+			return nil, &UnionError{Union: "SubscriptionFee", Discriminator: string(u.Type), Reason: "variant payload is nil"}
+		}
+		return marshalUnionVariant("type", string(u.Type), u.Credit)
 	}
 
 	if len(u.raw) > 0 {
@@ -181,6 +194,9 @@ func (u *SubscriptionFee) UnmarshalJSON(data []byte) error {
 	case SubscriptionFeeUsage:
 		u.Usage = new(UsageFee)
 		return json.Unmarshal(data, u.Usage)
+	case SubscriptionFeeCredit:
+		u.Credit = new(CreditFee)
+		return json.Unmarshal(data, u.Credit)
 	default:
 		u.raw = append(json.RawMessage(nil), data...)
 		return nil

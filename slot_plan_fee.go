@@ -16,6 +16,9 @@ type SlotPlanFee struct {
 
 	SlotUnitName string `json:"slot_unit_name"`
 
+	// Encodes as "SLOT" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -31,12 +34,15 @@ func (v *SlotPlanFee) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "minimum_count", "quota", "rates", "slot_unit_name")
+	v.ExtraFields = extraFields(fields, "minimum_count", "quota", "rates", "slot_unit_name", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v SlotPlanFee) MarshalJSON() ([]byte, error) {
 	type plain SlotPlanFee
+	if v.Type == "" {
+		v.Type = "SLOT"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

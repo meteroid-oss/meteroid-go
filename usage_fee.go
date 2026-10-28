@@ -6,9 +6,14 @@ import "encoding/json"
 
 // UsageFee is the UsageFee object of the Meteroid API.
 type UsageFee struct {
+	CreditUnit *FeeCreditUnit `json:"credit_unit,omitempty"`
+
 	MetricID BillableMetricID `json:"metric_id"`
 
 	Model UsagePricingModel `json:"model"`
+
+	// Encodes as "USAGE" when left empty.
+	Type string `json:"type"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
@@ -25,12 +30,15 @@ func (v *UsageFee) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "metric_id", "model")
+	v.ExtraFields = extraFields(fields, "credit_unit", "metric_id", "model", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v UsageFee) MarshalJSON() ([]byte, error) {
 	type plain UsageFee
+	if v.Type == "" {
+		v.Type = "USAGE"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

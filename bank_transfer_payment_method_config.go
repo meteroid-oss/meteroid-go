@@ -8,6 +8,9 @@ import "encoding/json"
 type BankTransferPaymentMethodConfig struct {
 	AccountID *BankAccountID `json:"account_id,omitempty"`
 
+	// Encodes as "bank_transfer" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -23,12 +26,15 @@ func (v *BankTransferPaymentMethodConfig) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "account_id")
+	v.ExtraFields = extraFields(fields, "account_id", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v BankTransferPaymentMethodConfig) MarshalJSON() ([]byte, error) {
 	type plain BankTransferPaymentMethodConfig
+	if v.Type == "" {
+		v.Type = "bank_transfer"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

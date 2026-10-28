@@ -15,9 +15,16 @@ import (
 type RefundEventData struct {
 	Amount int64 `json:"amount"`
 
+	// The part of `amount_reversed` lost to disputes or chargebacks: the invoice stays paid.
+	AmountDisputed *int64 `json:"amount_disputed,omitempty"`
+
 	AmountRefunded int64 `json:"amount_refunded"`
 
 	AmountReversed int64 `json:"amount_reversed"`
+
+	// What the provider withdrew above what the payment still held (refunded before); never
+	// applied to the invoice or credit. Contest it with the provider.
+	AmountReversedExcess *int64 `json:"amount_reversed_excess,omitempty"`
 
 	CreditNoteID *CreditNoteID `json:"credit_note_id,omitempty"`
 
@@ -61,7 +68,7 @@ func (v *RefundEventData) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "amount", "amount_refunded", "amount_reversed", "credit_note_id", "currency", "decline_kind", "error", "invoice_id", "parent_transaction_id", "payment_type", "processed_at", "provider_transaction_id", "refund_mode", "reversal_kind", "status", "transaction_id")
+	v.ExtraFields = extraFields(fields, "amount", "amount_disputed", "amount_refunded", "amount_reversed", "amount_reversed_excess", "credit_note_id", "currency", "decline_kind", "error", "invoice_id", "parent_transaction_id", "payment_type", "processed_at", "provider_transaction_id", "refund_mode", "reversal_kind", "status", "transaction_id")
 	return nil
 }
 

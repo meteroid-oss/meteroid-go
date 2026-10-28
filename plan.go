@@ -16,6 +16,8 @@ type Plan struct {
 	// RFC 3339 timestamp.
 	CreatedAt time.Time `json:"created_at"`
 
+	CreditExhaustedRule *CreditExhaustedRule `json:"credit_exhausted_rule,omitempty"`
+
 	Currency Currency `json:"currency"`
 
 	Description *string `json:"description,omitempty"`
@@ -69,7 +71,7 @@ func (v *Plan) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "available_parameters", "billing_cycles", "created_at", "currency", "description", "entitlements", "id", "minimum_commitment", "name", "net_terms", "period_start_day", "plan_type", "price_components", "product_family", "self_service_rank", "status", "tax_inclusive", "trial", "version", "version_id")
+	v.ExtraFields = extraFields(fields, "available_parameters", "billing_cycles", "created_at", "credit_exhausted_rule", "currency", "description", "entitlements", "id", "minimum_commitment", "name", "net_terms", "period_start_day", "plan_type", "price_components", "product_family", "self_service_rank", "status", "tax_inclusive", "trial", "version", "version_id")
 	return nil
 }
 

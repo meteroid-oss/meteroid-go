@@ -7,8 +7,13 @@ import "encoding/json"
 // SlidingWindowResetPeriod is the SlidingWindowResetPeriod object of the Meteroid API.
 //
 // Always ends at now — e.g. 30 days means the last 30 days, old usage drops off automatically.
+// A sliding window has no reset moment (`reset_at` is absent) and sends no threshold or
+// limit-reached webhooks; it is enforced by the entitlement check.
 type SlidingWindowResetPeriod struct {
 	Interval int32 `json:"interval"`
+
+	// Encodes as "SLIDING_WINDOW" when left empty.
+	Type string `json:"type"`
 
 	Unit CalendarUnit `json:"unit"`
 
@@ -27,12 +32,15 @@ func (v *SlidingWindowResetPeriod) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "interval", "unit")
+	v.ExtraFields = extraFields(fields, "interval", "type", "unit")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v SlidingWindowResetPeriod) MarshalJSON() ([]byte, error) {
 	type plain SlidingWindowResetPeriod
+	if v.Type == "" {
+		v.Type = "SLIDING_WINDOW"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }

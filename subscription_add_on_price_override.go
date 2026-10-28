@@ -10,6 +10,9 @@ type SubscriptionAddOnPriceOverride struct {
 
 	PriceEntry PriceEntry `json:"price_entry"`
 
+	// Encodes as "PRICE_OVERRIDE" when left empty.
+	Type string `json:"type"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -25,12 +28,15 @@ func (v *SubscriptionAddOnPriceOverride) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "name", "price_entry")
+	v.ExtraFields = extraFields(fields, "name", "price_entry", "type")
 	return nil
 }
 
-// MarshalJSON implements json.Marshaler, sending ExtraFields along.
+// MarshalJSON implements json.Marshaler, sending ExtraFields along and filling in the discriminator.
 func (v SubscriptionAddOnPriceOverride) MarshalJSON() ([]byte, error) {
 	type plain SubscriptionAddOnPriceOverride
+	if v.Type == "" {
+		v.Type = "PRICE_OVERRIDE"
+	}
 	return marshalWithExtra(plain(v), v.ExtraFields)
 }
