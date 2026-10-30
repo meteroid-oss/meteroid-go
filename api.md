@@ -6,7 +6,7 @@ resource. Each method also takes trailing `...RequestOption`s, such as `WithMaxR
 `WithTimeout`, `WithHeader` or `WithResponseInto`, for that call. Models and option structs are
 in the `meteroid` package.
 
-[Add ons](#add-ons) · [Add ons entitlements](#add-ons-entitlements) · [Batch jobs](#batch-jobs) · [Budgets](#budgets) · [Checkout sessions](#checkout-sessions) · [Checks](#checks) · [Connect](#connect) · [Coupons](#coupons) · [Credit notes](#credit-notes) · [Credit units](#credit-units) · [Credit units prices](#credit-units-prices) · [Credits](#credits) · [Credits grants](#credits-grants) · [Credits wallets](#credits-wallets) · [Custom properties](#custom-properties) · [Customers](#customers) · [Entitlements](#entitlements) · [Events](#events) · [Features](#features) · [Invoices](#invoices) · [Metrics](#metrics) · [Oauth](#oauth) · [Oauth apps](#oauth-apps) · [Plans](#plans) · [Plans versions](#plans-versions) · [Product families](#product-families) · [Products](#products) · [Products entitlements](#products-entitlements) · [Subscriptions](#subscriptions) · [Usage](#usage) · [Usage customer](#usage-customer) · [Usage costs](#usage-costs) · [Usage costs customer](#usage-costs-customer) · [Usage costs subscription](#usage-costs-subscription) · [Webhook endpoints](#webhook-endpoints) · [Webhook endpoints endpoints](#webhook-endpoints-endpoints)
+[Add ons](#add-ons) · [Add ons entitlements](#add-ons-entitlements) · [Batch jobs](#batch-jobs) · [Budgets](#budgets) · [Checkout sessions](#checkout-sessions) · [Checks](#checks) · [Connect](#connect) · [Coupons](#coupons) · [Credit notes](#credit-notes) · [Credit units](#credit-units) · [Credit units prices](#credit-units-prices) · [Credits](#credits) · [Credits grants](#credits-grants) · [Credits wallets](#credits-wallets) · [Custom properties](#custom-properties) · [Customers](#customers) · [Entitlements](#entitlements) · [Events](#events) · [Features](#features) · [Invoices](#invoices) · [Licenses](#licenses) · [Metrics](#metrics) · [Oauth](#oauth) · [Oauth apps](#oauth-apps) · [Plans](#plans) · [Plans versions](#plans-versions) · [Product families](#product-families) · [Products](#products) · [Products entitlements](#products-entitlements) · [Subscriptions](#subscriptions) · [Usage](#usage) · [Usage customer](#usage-customer) · [Usage costs](#usage-costs) · [Usage costs customer](#usage-costs-customer) · [Usage costs subscription](#usage-costs-subscription) · [Webhook endpoints](#webhook-endpoints) · [Webhook endpoints endpoints](#webhook-endpoints-endpoints)
 
 ## Add ons
 
@@ -241,6 +241,20 @@ in the `meteroid` package.
 | `client.Invoices().Download(ctx, invoiceID string) ([]byte, error)` | `GET /api/v1/invoices/{invoice_id}/download` | bytes |
 | `client.Invoices().Refresh(ctx, invoiceID string) (*Invoice, error)` | `POST /api/v1/invoices/{invoice_id}/refresh` | [`Invoice`](invoice.go) |
 | `client.Invoices().DownloadXML(ctx, invoiceID string) ([]byte, error)` | `GET /api/v1/invoices/{invoice_id}/xml` | bytes |
+
+## Licenses
+
+[`client.Licenses()`](licenses.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.Licenses().List(ctx, options *LicensesListOptions) (*LicenseListResponse, error)` | `GET /api/v1/licenses` | [`LicenseListResponse`](license_list_response.go) |
+| `client.Licenses().Create(ctx, issueLicenseRequest IssueLicenseRequest) (*IssueLicenseResponse, error)` | `POST /api/v1/licenses` | [`IssueLicenseResponse`](issue_license_response.go) |
+| `client.Licenses().Retrieve(ctx, licenseID string) (*License, error)` | `GET /api/v1/licenses/{license_id}` | [`License`](license.go) |
+| `client.Licenses().RetrieveActivationCode(ctx, licenseID string) (*LicenseActivationCode, error)` | `GET /api/v1/licenses/{license_id}/activation-code` | [`LicenseActivationCode`](license_activation_code.go) |
+| `client.Licenses().Offline(ctx, licenseID string, issueOfflineLicenseRequest IssueOfflineLicenseRequest) (*OfflineLicense, error)` | `POST /api/v1/licenses/{license_id}/offline` | [`OfflineLicense`](offline_license.go) |
+| `client.Licenses().Revoke(ctx, licenseID string, revokeLicenseRequest RevokeLicenseRequest) (*License, error)` | `POST /api/v1/licenses/{license_id}/revoke` | [`License`](license.go) |
+| `client.Licenses().ListLicensingSigningKeys(ctx) (*LicenseSigningKeysResponse, error)` | `GET /api/v1/licensing/signing-keys` | [`LicenseSigningKeysResponse`](license_signing_keys_response.go) |
 
 ## Metrics
 

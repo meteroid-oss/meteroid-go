@@ -139,6 +139,7 @@ func (a *CustomProperties) CreateCustomPropertyDefinition(ctx context.Context, c
 	req := newRequest(http.MethodPost, "/api/v1/custom-property-definitions", opts)
 	req.errors = errorSchemas{
 		"400": errorSchema[RestErrorResponse],
+		"403": errorSchema[RestErrorResponse],
 		"409": errorSchema[RestErrorResponse],
 		"429": errorSchema[RestErrorResponse],
 		"500": errorSchema[RestErrorResponse],
@@ -176,6 +177,7 @@ func (a *CustomProperties) UpdateCustomPropertyDefinition(ctx context.Context, i
 	req := newRequest(http.MethodPut, "/api/v1/custom-property-definitions/{id}", opts)
 	req.SetPathParam("id", id)
 	req.errors = errorSchemas{
+		"403": errorSchema[RestErrorResponse],
 		"404": errorSchema[RestErrorResponse],
 		"429": errorSchema[RestErrorResponse],
 		"500": errorSchema[RestErrorResponse],

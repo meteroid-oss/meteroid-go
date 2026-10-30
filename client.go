@@ -131,6 +131,11 @@ func (c *Client) Invoices() *Invoices {
 	return &Invoices{client: c}
 }
 
+// Licenses returns the licenses API.
+func (c *Client) Licenses() *Licenses {
+	return &Licenses{client: c}
+}
+
 // Metrics returns the metrics API.
 func (c *Client) Metrics() *Metrics {
 	return &Metrics{client: c}
