@@ -143,6 +143,7 @@ func (a *Budgets) Create(ctx context.Context, idOrAlias string, idempotencyKey s
 	req.errors = errorSchemas{
 		"400": errorSchema[RestErrorResponse],
 		"401": errorSchema[RestErrorResponse],
+		"403": errorSchema[RestErrorResponse],
 		"404": errorSchema[RestErrorResponse],
 		"409": errorSchema[RestErrorResponse],
 		"429": errorSchema[RestErrorResponse],
@@ -170,6 +171,7 @@ func (a *Budgets) Update(ctx context.Context, idOrAlias string, budgetID string,
 	req.errors = errorSchemas{
 		"400": errorSchema[RestErrorResponse],
 		"401": errorSchema[RestErrorResponse],
+		"403": errorSchema[RestErrorResponse],
 		"404": errorSchema[RestErrorResponse],
 		"409": errorSchema[RestErrorResponse],
 		"429": errorSchema[RestErrorResponse],
