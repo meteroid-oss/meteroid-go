@@ -32,6 +32,7 @@ func (a *PlansVersions) UpdateMinimum(ctx context.Context, planVersionID string,
 	req.errors = errorSchemas{
 		"400": errorSchema[RestErrorResponse],
 		"401": errorSchema[RestErrorResponse],
+		"403": errorSchema[RestErrorResponse],
 		"404": errorSchema[RestErrorResponse],
 		"429": errorSchema[RestErrorResponse],
 	}

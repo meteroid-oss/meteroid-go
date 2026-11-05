@@ -257,6 +257,7 @@ func (a *Plans) Replace(ctx context.Context, planID string, replacePlanRequest R
 	req.errors = errorSchemas{
 		"400": errorSchema[RestErrorResponse],
 		"401": errorSchema[RestErrorResponse],
+		"403": errorSchema[RestErrorResponse],
 		"404": errorSchema[RestErrorResponse],
 		"429": errorSchema[RestErrorResponse],
 	}
