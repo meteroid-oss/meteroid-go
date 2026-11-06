@@ -22,7 +22,7 @@ type CustomerPortalTokenResponse struct {
 	// Base URL of the customer portal
 	PortalURL string `json:"portal_url"`
 
-	// JWT token for portal access
+	// Opaque token for portal access
 	Token string `json:"token"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
