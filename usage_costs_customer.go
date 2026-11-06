@@ -48,6 +48,7 @@ func (a *UsageCostsCustomer) ListCosts(ctx context.Context, customerID string, m
 	req.errors = errorSchemas{
 		"400": errorSchema[RestErrorResponse],
 		"401": errorSchema[RestErrorResponse],
+		"403": errorSchema[RestErrorResponse],
 		"404": errorSchema[RestErrorResponse],
 		"429": errorSchema[RestErrorResponse],
 		"500": errorSchema[RestErrorResponse],
@@ -82,6 +83,7 @@ func (a *UsageCostsCustomer) ListEvents(ctx context.Context, customerID string, 
 	req.errors = errorSchemas{
 		"400": errorSchema[RestErrorResponse],
 		"401": errorSchema[RestErrorResponse],
+		"403": errorSchema[RestErrorResponse],
 		"404": errorSchema[RestErrorResponse],
 		"429": errorSchema[RestErrorResponse],
 		"500": errorSchema[RestErrorResponse],
