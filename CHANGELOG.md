@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.31.3](https://github.com/meteroid-oss/meteroid-go/compare/v0.31.2...v0.31.3) (2026-11-06)
+
+
+### Features
+
+* **api:** update `GET /api/v1/usage/customer/{customer_id}/costs`, `GET /api/v1/usage/customer/{customer_id}/events`, `GET /api/v1/usage/subscription/{subscription_id}/costs`, `GET /api/v1/usage/subscription/{subscription_id}/events`, `POST webhook:payment.failed` and 5 more ([1a260a1](https://github.com/meteroid-oss/meteroid-go/commit/1a260a18558e7ca24054cfc91b7f411c8bdc6069))
+* **api:** update SDKs to meteroid 0.1.0 ([#21](https://github.com/meteroid-oss/meteroid-go/issues/21)) ([1a260a1](https://github.com/meteroid-oss/meteroid-go/commit/1a260a18558e7ca24054cfc91b7f411c8bdc6069))
+
 ## [0.31.2](https://github.com/meteroid-oss/meteroid-go/compare/v0.31.1...v0.31.2) (2026-11-05)
 
 
