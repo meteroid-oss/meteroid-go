@@ -19,6 +19,9 @@ type License struct {
 
 	CustomerName string `json:"customer_name"`
 
+	// Ephemeral: each activation of the reusable code gets a license of this many hours.
+	EphemeralHours *int32 `json:"ephemeral_hours,omitempty"`
+
 	// Whether the activation code can still be retrieved: only until activation or revocation.
 	HasActivationCode bool `json:"has_activation_code"`
 
@@ -65,7 +68,7 @@ func (v *License) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "auto_issued", "created_at", "customer_id", "customer_name", "has_activation_code", "id", "instance_id", "last_refreshed_at", "offline", "plan_name", "revoked_at", "revoked_immediately", "status", "subscription_id", "validity_days")
+	v.ExtraFields = extraFields(fields, "auto_issued", "created_at", "customer_id", "customer_name", "ephemeral_hours", "has_activation_code", "id", "instance_id", "last_refreshed_at", "offline", "plan_name", "revoked_at", "revoked_immediately", "status", "subscription_id", "validity_days")
 	return nil
 }
 
