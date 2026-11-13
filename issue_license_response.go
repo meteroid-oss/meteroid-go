@@ -7,6 +7,7 @@ import "encoding/json"
 // IssueLicenseResponse is the IssueLicenseResponse object of the Meteroid API.
 type IssueLicenseResponse struct {
 	// Online: one-time code the customer enters in their installation to activate the license.
+	// Ephemeral: the reusable code, e.g. a CI secret.
 	ActivationCode *string `json:"activation_code,omitempty"`
 
 	License License `json:"license"`

@@ -95,7 +95,7 @@ func (a *Licenses) Retrieve(ctx context.Context, licenseID string, opts ...Reque
 //
 // # Get a license's activation code
 //
-// Available until the license is activated or revoked.
+// Available until the license is activated or revoked; for an ephemeral license, until revoked.
 func (a *Licenses) RetrieveActivationCode(ctx context.Context, licenseID string, opts ...RequestOption) (*LicenseActivationCode, error) {
 	req := newRequest(http.MethodGet, "/api/v1/licenses/{license_id}/activation-code", opts)
 	req.SetPathParam("license_id", licenseID)
