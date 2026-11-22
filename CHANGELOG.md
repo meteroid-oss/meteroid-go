@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.31.6](https://github.com/meteroid-oss/meteroid-go/compare/v0.31.5...v0.31.6) (2026-11-22)
+
+
+### Features
+
+* **api:** update `GET /api/v1/subscriptions/{subscription_id}`, `PATCH /api/v1/subscriptions/{subscription_id}`, `POST /api/v1/subscriptions`, `POST /api/v1/subscriptions/{subscription_id}/cancel` ([ca56303](https://github.com/meteroid-oss/meteroid-go/commit/ca56303077bf3dfb7f8f99e1083fe6d6eadbcb76))
+* **api:** update SDKs to meteroid 0.1.0 ([#27](https://github.com/meteroid-oss/meteroid-go/issues/27)) ([ca56303](https://github.com/meteroid-oss/meteroid-go/commit/ca56303077bf3dfb7f8f99e1083fe6d6eadbcb76))
+
 ## [0.31.5](https://github.com/meteroid-oss/meteroid-go/compare/v0.31.4...v0.31.5) (2026-11-22)
 
 
