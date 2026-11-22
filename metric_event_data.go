@@ -40,6 +40,8 @@ type MetricEventData struct {
 	// What one unit of the metric is called, e.g. `token`.
 	UnitSingular *string `json:"unit_singular,omitempty"`
 
+	UsageBreakdownKey *string `json:"usage_breakdown_key,omitempty"`
+
 	UsageGroupKey *string `json:"usage_group_key,omitempty"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -57,7 +59,7 @@ func (v *MetricEventData) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "aggregation_key", "aggregation_type", "code", "created_at", "description", "metric_id", "name", "product_family_id", "product_id", "segmentation_matrix", "unit_conversion_factor", "unit_conversion_rounding", "unit_plural", "unit_singular", "usage_group_key")
+	v.ExtraFields = extraFields(fields, "aggregation_key", "aggregation_type", "code", "created_at", "description", "metric_id", "name", "product_family_id", "product_id", "segmentation_matrix", "unit_conversion_factor", "unit_conversion_rounding", "unit_plural", "unit_singular", "usage_breakdown_key", "usage_group_key")
 	return nil
 }
 

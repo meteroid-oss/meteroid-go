@@ -36,6 +36,12 @@ type CreateMetricRequest struct {
 	// Trimmed; at most 32 characters.
 	UnitSingular *string `json:"unit_singular,omitempty"`
 
+	// Event property, e.g. `project_id`, that breaks each invoice line down by value. The line is
+	// still priced on its total usage, and each value shows its quantity and share of the amount.
+	UsageBreakdownKey *string `json:"usage_breakdown_key,omitempty"`
+
+	// Event property, e.g. `cluster_id`, whose values are billed as separate invoice lines, each
+	// priced on its own usage.
 	UsageGroupKey *string `json:"usage_group_key,omitempty"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -53,7 +59,7 @@ func (v *CreateMetricRequest) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "aggregation_key", "aggregation_type", "code", "description", "filters", "name", "product_family_id", "product_id", "segmentation_matrix", "unit_conversion", "unit_plural", "unit_singular", "usage_group_key")
+	v.ExtraFields = extraFields(fields, "aggregation_key", "aggregation_type", "code", "description", "filters", "name", "product_family_id", "product_id", "segmentation_matrix", "unit_conversion", "unit_plural", "unit_singular", "usage_breakdown_key", "usage_group_key")
 	return nil
 }
 

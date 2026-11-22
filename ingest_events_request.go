@@ -6,7 +6,7 @@ import "encoding/json"
 
 // IngestEventsRequest is the IngestEventsRequest object of the Meteroid API.
 type IngestEventsRequest struct {
-	// Allow events with timestamps more than 1 day in the past. Defaults to `false`.
+	// Allow events with timestamps more than 1 day in the past, up to 13 months. Defaults to `false`.
 	AllowBackfilling *bool `json:"allow_backfilling,omitempty"`
 
 	// Accept the batch even if some events fail validation. Defaults to `false`.

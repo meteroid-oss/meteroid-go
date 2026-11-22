@@ -37,6 +37,11 @@ type Invoices struct {
 	client *Client
 }
 
+// Payments returns the payments API.
+func (a *Invoices) Payments() *InvoicesPayments {
+	return &InvoicesPayments{client: a.client}
+}
+
 // fetchList sends GET /api/v1/invoices and decodes the response, for [Invoices.List].
 func (a *Invoices) fetchList(ctx context.Context, options *InvoicesListOptions, opts ...RequestOption) (*InvoiceListResponse, error) {
 	req := newRequest(http.MethodGet, "/api/v1/invoices", opts)
@@ -207,6 +212,54 @@ func (a *Invoices) Download(ctx context.Context, invoiceID string, opts ...Reque
 		"500": errorSchema[RestErrorResponse],
 	}
 	return a.client.executeBinary(ctx, req)
+}
+
+// MarkPaid sends POST /api/v1/invoices/{invoice_id}/mark-paid.
+//
+// # Mark an invoice as paid
+//
+// Record an external payment for the entire remaining balance of a finalized invoice. The amount
+// must match the remaining balance.
+func (a *Invoices) MarkPaid(ctx context.Context, invoiceID string, idempotencyKey string, recordInvoicePaymentRequest RecordInvoicePaymentRequest, opts ...RequestOption) (*Transaction, error) {
+	req := newRequest(http.MethodPost, "/api/v1/invoices/{invoice_id}/mark-paid", opts)
+	req.SetPathParam("invoice_id", invoiceID)
+	req.errors = errorSchemas{
+		"400": errorSchema[RestErrorResponse],
+		"401": errorSchema[RestErrorResponse],
+		"403": errorSchema[RestErrorResponse],
+		"404": errorSchema[RestErrorResponse],
+		"409": errorSchema[RestErrorResponse],
+		"429": errorSchema[RestErrorResponse],
+		"500": errorSchema[RestErrorResponse],
+	}
+	req.SetHeader("Idempotency-Key", idempotencyKey)
+	req.SetJSONBody(recordInvoicePaymentRequest)
+	var out Transaction
+	if err := a.client.execute(ctx, req, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// MarkUncollectible sends POST /api/v1/invoices/{invoice_id}/mark-uncollectible.
+//
+// # Mark an invoice as uncollectible
+//
+// Transition a finalized invoice to uncollectible and stop its payment reminders.
+func (a *Invoices) MarkUncollectible(ctx context.Context, invoiceID string, idempotencyKey string, opts ...RequestOption) error {
+	req := newRequest(http.MethodPost, "/api/v1/invoices/{invoice_id}/mark-uncollectible", opts)
+	req.SetPathParam("invoice_id", invoiceID)
+	req.errors = errorSchemas{
+		"400": errorSchema[RestErrorResponse],
+		"401": errorSchema[RestErrorResponse],
+		"403": errorSchema[RestErrorResponse],
+		"404": errorSchema[RestErrorResponse],
+		"409": errorSchema[RestErrorResponse],
+		"429": errorSchema[RestErrorResponse],
+		"500": errorSchema[RestErrorResponse],
+	}
+	req.SetHeader("Idempotency-Key", idempotencyKey)
+	return a.client.execute(ctx, req, nil)
 }
 
 // Refresh invoice

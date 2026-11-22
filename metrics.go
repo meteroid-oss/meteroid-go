@@ -138,6 +138,7 @@ func (a *Metrics) Create(ctx context.Context, createMetricRequest CreateMetricRe
 	req.errors = errorSchemas{
 		"400": errorSchema[RestErrorResponse],
 		"401": errorSchema[RestErrorResponse],
+		"403": errorSchema[RestErrorResponse],
 		"429": errorSchema[RestErrorResponse],
 	}
 	req.SetJSONBody(createMetricRequest)
@@ -175,6 +176,7 @@ func (a *Metrics) Update(ctx context.Context, metricID string, updateMetricReque
 	req.errors = errorSchemas{
 		"400": errorSchema[RestErrorResponse],
 		"401": errorSchema[RestErrorResponse],
+		"403": errorSchema[RestErrorResponse],
 		"404": errorSchema[RestErrorResponse],
 		"429": errorSchema[RestErrorResponse],
 	}
