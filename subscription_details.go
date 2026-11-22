@@ -71,6 +71,9 @@ type SubscriptionDetails struct {
 
 	PaymentMethodsConfig *PaymentMethodsConfig `json:"payment_methods_config,omitempty"`
 
+	// Changes scheduled to apply later: cancellation, plan change or amendment.
+	PendingEvents []PendingScheduledEvent `json:"pending_events,omitempty"`
+
 	// Billing period (monthly, annual, etc.)
 	Period BillingPeriodEnum `json:"period"`
 
@@ -83,6 +86,10 @@ type SubscriptionDetails struct {
 	PlanVersionID PlanVersionID `json:"plan_version_id"`
 
 	PurchaseOrder *string `json:"purchase_order,omitempty"`
+
+	// Date the subscription ends at the start of, when a cancellation is scheduled: its first
+	// day without service. `end_date` is not affected by a scheduled cancellation.
+	ScheduledCancellationDate *Date `json:"scheduled_cancellation_date,omitempty"`
 
 	// When the subscription contract starts (benefits apply from this date)
 	StartDate Date `json:"start_date"`
@@ -117,7 +124,7 @@ func (v *SubscriptionDetails) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "activated_at", "add_ons", "applied_coupons", "auto_advance_invoices", "billing_day_anchor", "billing_start_date", "charge_automatically", "checkout_url", "components", "created_at", "currency", "current_period_end", "current_period_start", "custom_properties", "customer_alias", "customer_id", "customer_name", "end_date", "entitlements", "id", "invoice_memo", "minimum_commitment", "mrr_cents", "net_terms", "payment_methods_config", "period", "plan_id", "plan_name", "plan_version", "plan_version_id", "purchase_order", "start_date", "status", "tax_inclusive", "trial_duration", "usage_filter", "usage_filter_effective_from")
+	v.ExtraFields = extraFields(fields, "activated_at", "add_ons", "applied_coupons", "auto_advance_invoices", "billing_day_anchor", "billing_start_date", "charge_automatically", "checkout_url", "components", "created_at", "currency", "current_period_end", "current_period_start", "custom_properties", "customer_alias", "customer_id", "customer_name", "end_date", "entitlements", "id", "invoice_memo", "minimum_commitment", "mrr_cents", "net_terms", "payment_methods_config", "pending_events", "period", "plan_id", "plan_name", "plan_version", "plan_version_id", "purchase_order", "scheduled_cancellation_date", "start_date", "status", "tax_inclusive", "trial_duration", "usage_filter", "usage_filter_effective_from")
 	return nil
 }
 

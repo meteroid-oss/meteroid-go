@@ -6,6 +6,13 @@ import "encoding/json"
 
 // CancelSubscriptionResponse is the CancelSubscriptionResponse object of the Meteroid API.
 type CancelSubscriptionResponse struct {
+	// Changes still scheduled after this request, including the cancellation.
+	PendingEvents RequiredSlice[PendingScheduledEvent] `json:"pending_events"`
+
+	// Date the subscription ends at the start of: its first day without service. Empty when the
+	// cancellation applied immediately.
+	ScheduledCancellationDate *Date `json:"scheduled_cancellation_date,omitempty"`
+
 	Subscription Subscription `json:"subscription"`
 
 	// ExtraFields holds the properties this SDK version does not know, as
@@ -19,11 +26,11 @@ func (v *CancelSubscriptionResponse) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	fields, err := objectFields(data, "CancelSubscriptionResponse", "subscription")
+	fields, err := objectFields(data, "CancelSubscriptionResponse", "pending_events", "subscription")
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "subscription")
+	v.ExtraFields = extraFields(fields, "pending_events", "scheduled_cancellation_date", "subscription")
 	return nil
 }
 
