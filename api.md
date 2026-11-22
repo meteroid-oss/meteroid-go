@@ -6,7 +6,7 @@ resource. Each method also takes trailing `...RequestOption`s, such as `WithMaxR
 `WithTimeout`, `WithHeader` or `WithResponseInto`, for that call. Models and option structs are
 in the `meteroid` package.
 
-[Add ons](#add-ons) · [Add ons entitlements](#add-ons-entitlements) · [Batch jobs](#batch-jobs) · [Budgets](#budgets) · [Checkout sessions](#checkout-sessions) · [Checks](#checks) · [Connect](#connect) · [Coupons](#coupons) · [Credit notes](#credit-notes) · [Credit units](#credit-units) · [Credit units prices](#credit-units-prices) · [Credits](#credits) · [Credits grants](#credits-grants) · [Credits wallets](#credits-wallets) · [Custom properties](#custom-properties) · [Customers](#customers) · [Entitlements](#entitlements) · [Events](#events) · [Features](#features) · [Invoices](#invoices) · [Licenses](#licenses) · [Metrics](#metrics) · [Oauth](#oauth) · [Oauth apps](#oauth-apps) · [Plans](#plans) · [Plans versions](#plans-versions) · [Product families](#product-families) · [Products](#products) · [Products entitlements](#products-entitlements) · [Subscriptions](#subscriptions) · [Usage](#usage) · [Usage customer](#usage-customer) · [Usage costs](#usage-costs) · [Usage costs customer](#usage-costs-customer) · [Usage costs subscription](#usage-costs-subscription) · [Webhook endpoints](#webhook-endpoints) · [Webhook endpoints endpoints](#webhook-endpoints-endpoints)
+[Add ons](#add-ons) · [Add ons entitlements](#add-ons-entitlements) · [Batch jobs](#batch-jobs) · [Budgets](#budgets) · [Checkout sessions](#checkout-sessions) · [Checks](#checks) · [Connect](#connect) · [Coupons](#coupons) · [Credit notes](#credit-notes) · [Credit units](#credit-units) · [Credit units prices](#credit-units-prices) · [Credits](#credits) · [Credits grants](#credits-grants) · [Credits wallets](#credits-wallets) · [Custom properties](#custom-properties) · [Customers](#customers) · [Entitlements](#entitlements) · [Events](#events) · [Features](#features) · [Invoices](#invoices) · [Invoices payments](#invoices-payments) · [Licenses](#licenses) · [Metrics](#metrics) · [Oauth](#oauth) · [Oauth apps](#oauth-apps) · [Plans](#plans) · [Plans versions](#plans-versions) · [Product families](#product-families) · [Products](#products) · [Products entitlements](#products-entitlements) · [Subscriptions](#subscriptions) · [Usage](#usage) · [Usage customer](#usage-customer) · [Usage costs](#usage-costs) · [Usage costs customer](#usage-costs-customer) · [Usage costs subscription](#usage-costs-subscription) · [Webhook endpoints](#webhook-endpoints) · [Webhook endpoints endpoints](#webhook-endpoints-endpoints)
 
 ## Add ons
 
@@ -239,8 +239,19 @@ in the `meteroid` package.
 | `client.Invoices().Retrieve(ctx, invoiceID string) (*Invoice, error)` | `GET /api/v1/invoices/{invoice_id}` | [`Invoice`](invoice.go) |
 | `client.Invoices().UpdateCustomProperties(ctx, invoiceID string, invoiceCustomPropertiesRequest InvoiceCustomPropertiesRequest) (*Invoice, error)` | `PATCH /api/v1/invoices/{invoice_id}/custom-properties` | [`Invoice`](invoice.go) |
 | `client.Invoices().Download(ctx, invoiceID string) ([]byte, error)` | `GET /api/v1/invoices/{invoice_id}/download` | bytes |
+| `client.Invoices().MarkPaid(ctx, invoiceID string, idempotencyKey string, recordInvoicePaymentRequest RecordInvoicePaymentRequest) (*Transaction, error)` | `POST /api/v1/invoices/{invoice_id}/mark-paid` | [`Transaction`](transaction.go) |
+| `client.Invoices().MarkUncollectible(ctx, invoiceID string, idempotencyKey string) error` | `POST /api/v1/invoices/{invoice_id}/mark-uncollectible` | nothing |
 | `client.Invoices().Refresh(ctx, invoiceID string) (*Invoice, error)` | `POST /api/v1/invoices/{invoice_id}/refresh` | [`Invoice`](invoice.go) |
 | `client.Invoices().DownloadXML(ctx, invoiceID string) ([]byte, error)` | `GET /api/v1/invoices/{invoice_id}/xml` | bytes |
+
+### Invoices payments
+
+[`client.Invoices().Payments()`](invoices_payments.go)
+
+| Method | Request | Returns |
+| --- | --- | --- |
+| `client.Invoices().Payments().Create(ctx, invoiceID string, idempotencyKey string, recordInvoicePaymentRequest RecordInvoicePaymentRequest) (*Transaction, error)` | `POST /api/v1/invoices/{invoice_id}/payments` | [`Transaction`](transaction.go) |
+| `client.Invoices().Payments().Reverse(ctx, invoiceID string, transactionID string, idempotencyKey string, reverseInvoicePaymentRequest ReverseInvoicePaymentRequest) (*Transaction, error)` | `POST /api/v1/invoices/{invoice_id}/payments/{transaction_id}/reverse` | [`Transaction`](transaction.go) |
 
 ## Licenses
 

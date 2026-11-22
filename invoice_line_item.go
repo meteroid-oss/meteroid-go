@@ -30,6 +30,8 @@ type InvoiceLineItem struct {
 
 	UnitPrice *string `json:"unit_price,omitempty"`
 
+	UsageBreakdown *InvoiceLineUsageBreakdown `json:"usage_breakdown,omitempty"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -45,7 +47,7 @@ func (v *InvoiceLineItem) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "amount_total", "credit_unit", "description", "end_date", "name", "quantity", "quoted_unit_price", "start_date", "sub_line_items", "tax_rate", "unit_price")
+	v.ExtraFields = extraFields(fields, "amount_total", "credit_unit", "description", "end_date", "name", "quantity", "quoted_unit_price", "start_date", "sub_line_items", "tax_rate", "unit_price", "usage_breakdown")
 	return nil
 }
 

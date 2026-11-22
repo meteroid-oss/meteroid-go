@@ -25,6 +25,9 @@ type UpdateMetricRequest struct {
 	// strings to remove it. Trimmed; at most 32 characters.
 	UnitSingular *Nullable[string] `json:"unit_singular,omitempty"`
 
+	// Omit to leave the breakdown key unchanged; send `null` to remove it.
+	UsageBreakdownKey *Nullable[string] `json:"usage_breakdown_key,omitempty"`
+
 	// ExtraFields holds the properties this SDK version does not know, as
 	// decoded, and sends them along when encoding.
 	ExtraFields map[string]json.RawMessage `json:"-"`
@@ -40,7 +43,7 @@ func (v *UpdateMetricRequest) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "description", "filters", "name", "segmentation_matrix", "unit_conversion", "unit_plural", "unit_singular")
+	v.ExtraFields = extraFields(fields, "description", "filters", "name", "segmentation_matrix", "unit_conversion", "unit_plural", "unit_singular", "usage_breakdown_key")
 	return nil
 }
 

@@ -4,6 +4,9 @@ package meteroid
 
 // SubscriptionStatusEnum is one of [AllSubscriptionStatusEnumValues], or a value this SDK version
 // does not know.
+//
+// `PendingCharge`, `Paused`, `Suspended`, `Superseded` and `Errored` stay in the published
+// schema; no subscription holds them any more, and a filter on them lists none.
 type SubscriptionStatusEnum string
 
 // Known values of SubscriptionStatusEnum.
