@@ -13,3 +13,15 @@ func TestEvents_Ingest(t *testing.T) {
 	call(t, client.Events().Ingest, decode[meteroid.IngestEventsRequest](t, `{"events":[{"code":"sample","customer_id":"sample","event_id":"sample"}]}`))
 	expect(t, requests, "POST /api/v1/events/ingest")
 }
+
+func TestEvents_Amend(t *testing.T) {
+	client, requests := mock(200, "application/json", `{"ingested_at":"2023-12-31T23:59:59.999-05:30"}`)
+	call(t, client.Events().Amend, "event_id", decode[meteroid.AmendEventRequest](t, `{"properties":{"alpha":"sample"},"timestamp":"2023-12-31T23:59:59.999-05:30"}`))
+	expect(t, requests, "POST /api/v1/events/event_id/amend")
+}
+
+func TestEvents_Void(t *testing.T) {
+	client, requests := mock(200, "application/json", `{"ingested_at":"2023-12-31T23:59:59.999-05:30"}`)
+	call(t, client.Events().Void, "event_id", decode[meteroid.VoidEventRequest](t, `{}`))
+	expect(t, requests, "POST /api/v1/events/event_id/void")
+}

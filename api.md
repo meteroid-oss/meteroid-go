@@ -213,6 +213,8 @@ in the `meteroid` package.
 | Method | Request | Returns |
 | --- | --- | --- |
 | `client.Events().Ingest(ctx, ingestEventsRequest IngestEventsRequest) (*IngestEventsResponse, error)` | `POST /api/v1/events/ingest` | [`IngestEventsResponse`](ingest_events_response.go) |
+| `client.Events().Amend(ctx, eventID string, amendEventRequest AmendEventRequest) (*EventChangeResponse, error)` | `POST /api/v1/events/{event_id}/amend` | [`EventChangeResponse`](event_change_response.go) |
+| `client.Events().Void(ctx, eventID string, voidEventRequest VoidEventRequest) (*EventChangeResponse, error)` | `POST /api/v1/events/{event_id}/void` | [`EventChangeResponse`](event_change_response.go) |
 
 ## Features
 
