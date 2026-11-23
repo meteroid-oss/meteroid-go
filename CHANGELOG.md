@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.31.7](https://github.com/meteroid-oss/meteroid-go/compare/v0.31.6...v0.31.7) (2026-11-23)
+
+
+### Features
+
+* **api:** add `POST /api/v1/events/{event_id}/amend`, `POST /api/v1/events/{event_id}/void` ([d8f8cc9](https://github.com/meteroid-oss/meteroid-go/commit/d8f8cc970ef8a76c899234b75ed4869ed02dc536))
+* **api:** update `GET /api/v1/invoices`, `GET /api/v1/invoices/{invoice_id}`, `PATCH /api/v1/invoices/{invoice_id}/custom-properties`, `POST /api/v1/invoices/{invoice_id}/refresh` ([d8f8cc9](https://github.com/meteroid-oss/meteroid-go/commit/d8f8cc970ef8a76c899234b75ed4869ed02dc536))
+* **api:** update SDKs to meteroid 0.1.0 ([#29](https://github.com/meteroid-oss/meteroid-go/issues/29)) ([d8f8cc9](https://github.com/meteroid-oss/meteroid-go/commit/d8f8cc970ef8a76c899234b75ed4869ed02dc536))
+
 ## [0.31.6](https://github.com/meteroid-oss/meteroid-go/compare/v0.31.5...v0.31.6) (2026-11-22)
 
 
