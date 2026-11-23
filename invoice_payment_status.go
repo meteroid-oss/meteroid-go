@@ -15,6 +15,7 @@ const (
 	InvoicePaymentStatusPaid          InvoicePaymentStatus = "PAID"
 	InvoicePaymentStatusErrored       InvoicePaymentStatus = "ERRORED"
 	InvoicePaymentStatusProcessing    InvoicePaymentStatus = "PROCESSING"
+	InvoicePaymentStatusCarried       InvoicePaymentStatus = "CARRIED"
 )
 
 // AllInvoicePaymentStatusValues lists every InvoicePaymentStatus value known to this SDK version.
@@ -24,6 +25,7 @@ var AllInvoicePaymentStatusValues = []InvoicePaymentStatus{
 	InvoicePaymentStatusPaid,
 	InvoicePaymentStatusErrored,
 	InvoicePaymentStatusProcessing,
+	InvoicePaymentStatusCarried,
 }
 
 // String returns the wire representation of the value.

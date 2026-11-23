@@ -20,6 +20,12 @@ type Invoice struct {
 	// emission date). Shown as "Invoice date".
 	BillingPeriodStart *Date `json:"billing_period_start,omitempty"`
 
+	// Debts carried in from earlier invoices (amounts due below the payment providers' minimum
+	// charge, never collected on their own) less the one this invoice carried to a later
+	// invoice, in minor units. Included in `amount_due`:
+	// `amount_due = total + carried_balance - applied_credits - paid`.
+	CarriedBalance *int64 `json:"carried_balance,omitempty"`
+
 	ChildInvoiceID *InvoiceID `json:"child_invoice_id,omitempty"`
 
 	Coupons RequiredSlice[CouponLineItem] `json:"coupons"`
@@ -127,7 +133,7 @@ func (v *Invoice) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "amount_due", "applied_credits", "billing_period_start", "child_invoice_id", "coupons", "created_at", "currency", "custom_properties", "customer_details", "customer_id", "due_date", "einvoicing_status", "finalized_at", "id", "invoice_date", "invoice_number", "invoice_type", "line_items", "marked_as_uncollectible_at", "memo", "net_terms", "paid_at", "parent_invoice_id", "payment_disputed_at", "payment_status", "promotional_credits", "purchase_order", "reference", "settled_by_credit_notes", "status", "subscription_id", "subtotal", "subtotal_recurring", "tax_amount", "tax_breakdown", "tax_inclusive", "total", "transactions", "updated_at", "voided_at")
+	v.ExtraFields = extraFields(fields, "amount_due", "applied_credits", "billing_period_start", "carried_balance", "child_invoice_id", "coupons", "created_at", "currency", "custom_properties", "customer_details", "customer_id", "due_date", "einvoicing_status", "finalized_at", "id", "invoice_date", "invoice_number", "invoice_type", "line_items", "marked_as_uncollectible_at", "memo", "net_terms", "paid_at", "parent_invoice_id", "payment_disputed_at", "payment_status", "promotional_credits", "purchase_order", "reference", "settled_by_credit_notes", "status", "subscription_id", "subtotal", "subtotal_recurring", "tax_amount", "tax_breakdown", "tax_inclusive", "total", "transactions", "updated_at", "voided_at")
 	return nil
 }
 
