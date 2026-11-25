@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.31.8](https://github.com/meteroid-oss/meteroid-go/compare/v0.31.7...v0.31.8) (2026-11-25)
+
+
+### Features
+
+* **api:** update `GET /api/v1/licenses`, `GET /api/v1/licenses/{license_id}`, `POST /api/v1/licenses`, `POST /api/v1/licenses/{license_id}/revoke` ([dd3c725](https://github.com/meteroid-oss/meteroid-go/commit/dd3c7253c1e3da6c8fdb00ac43d9f3a8a52f30bb))
+* **api:** update SDKs to meteroid 0.1.0 ([#31](https://github.com/meteroid-oss/meteroid-go/issues/31)) ([dd3c725](https://github.com/meteroid-oss/meteroid-go/commit/dd3c7253c1e3da6c8fdb00ac43d9f3a8a52f30bb))
+
 ## [0.31.7](https://github.com/meteroid-oss/meteroid-go/compare/v0.31.6...v0.31.7) (2026-11-23)
 
 
