@@ -33,6 +33,9 @@ type License struct {
 	// RFC 3339 timestamp.
 	LastRefreshedAt *time.Time `json:"last_refreshed_at,omitempty"`
 
+	// Signed into the license as is.
+	Metadata RequiredMap[string] `json:"metadata"`
+
 	// Issued as a signed offline license: never activated nor refreshed.
 	Offline bool `json:"offline"`
 
@@ -64,11 +67,11 @@ func (v *License) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, (*plain)(v)); err != nil {
 		return err
 	}
-	fields, err := objectFields(data, "License", "auto_issued", "created_at", "customer_id", "customer_name", "has_activation_code", "id", "offline", "revoked_immediately", "status", "validity_days")
+	fields, err := objectFields(data, "License", "auto_issued", "created_at", "customer_id", "customer_name", "has_activation_code", "id", "metadata", "offline", "revoked_immediately", "status", "validity_days")
 	if err != nil {
 		return err
 	}
-	v.ExtraFields = extraFields(fields, "auto_issued", "created_at", "customer_id", "customer_name", "ephemeral_hours", "has_activation_code", "id", "instance_id", "last_refreshed_at", "offline", "plan_name", "revoked_at", "revoked_immediately", "status", "subscription_id", "validity_days")
+	v.ExtraFields = extraFields(fields, "auto_issued", "created_at", "customer_id", "customer_name", "ephemeral_hours", "has_activation_code", "id", "instance_id", "last_refreshed_at", "metadata", "offline", "plan_name", "revoked_at", "revoked_immediately", "status", "subscription_id", "validity_days")
 	return nil
 }
 
